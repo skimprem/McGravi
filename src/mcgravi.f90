@@ -280,7 +280,7 @@ module mcgravi_main
 ! 3.0.4  03/03/2015 : 1. modification de parameter (nmax=100000,max=10000000) -ancienne valeur 5000000 dans sparse_cholesky.f90
 !                     2. ajout du nouveau type d'entete des fichiers A10 issus du logiciel g9   
 !
-!
+! 
 ! note ifort : Le compilateur initialise mal les variables. Dans ce cas, il faut aller dans Projet\Propriétés de MC Gravi\Propriétés
 ! de configuration\Fortran\Data\Local Variable Storage\ et sélectionner : All variables SAVE
 ! 
