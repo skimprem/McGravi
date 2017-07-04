@@ -21,7 +21,7 @@ type Tgravi
     logical Estimate ! calibration estimée ou non 
     integer pos      ! position de l'inconnue 
     integer Num
-    character(len=1) N !indice du gravi ; destiné à remplacer Num
+    character(len=3) N !indice du gravi ; destiné à remplacer Num
     real*8 Cf
 end type Tgravi
 
@@ -92,7 +92,7 @@ Type Tprofil
     integer jour
     character (len=40) nomfic
     character (len=8) Serial
-    character (len=1) Ngravi
+    character (len=3) Ngravi
     character (len=8) Tide 
 end type Tprofil
 

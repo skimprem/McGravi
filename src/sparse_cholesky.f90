@@ -43,7 +43,7 @@ integer function CHOLESKY(M,neqns,b,mode,c)
     
     external mmpym,smxpym
     
-    if(mode.lt.0 .or. mode.gt.3) stop'incorrect mode'
+    if(mode.lt.0 .or. mode.gt.3) stop 'incorrect mode'
     
 	! reorganization as sparse matrix
 	call reorganize_matrix(M,a,adjncy,xadj,neqns,nnza)

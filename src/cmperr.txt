@@ -6,18 +6,159 @@ gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion 
 gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check param.f90
 gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check lect_param.f90
 gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check lect_rawdata.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_data.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check write_matr.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check rempli_matMC.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check sparse_cholesky.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_inversion.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_simulation.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check ecriture.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check gmt.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check write_Html.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check write_xml.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_statistic.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check BLKFCLT.F
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mcgravi.f90
-gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_gravi.f90
-gfortran -static -o ../bin/mcgravi mc_gravi.o Port_routines.o util_str.o sys_utils.o str_const.o raw_data.o param.o lect_param.o lect_rawdata.o mc_data.o write_matr.o rempli_matMC.o sparse_cholesky.o mc_inversion.o mc_simulation.o ecriture.o gmt.o write_Html.o write_xml.o mc_statistic.o BLKFCLT.o mcgravi.o 
+lect_rawdata.f90:10:16:
+
+     use Raw_data
+                1
+Error: Unexpected USE statement at (1)
+lect_rawdata.f90:11:16:
+
+     use util_str
+                1
+Error: Unexpected USE statement at (1)
+lect_rawdata.f90:12:18:
+
+     use param_data
+                  1
+Error: Unexpected USE statement at (1)
+lect_rawdata.f90:14:17:
+
+     implicit none
+                 1
+Error: Unexpected IMPLICIT NONE statement at (1)
+lect_rawdata.f90:15:30:
+
+     character (len=255) nomfic
+                              1
+Error: Unexpected data declaration statement at (1)
+lect_rawdata.f90:16:22:
+
+     integer nc,i,k,num
+                      1
+Error: Unexpected data declaration statement at (1)
+lect_rawdata.f90:17:29:
+
+     character (len=255) line 
+                             1
+Error: Unexpected data declaration statement at (1)
+lect_rawdata.f90:18:35:
+
+     character (len=255) tabline(20)
+                                   1
+Error: Unexpected data declaration statement at (1)
+lect_rawdata.f90:19:17:
+
+     logical valid
+                 1
+Error: Unexpected data declaration statement at (1)
+lect_rawdata.f90:20:13:
+
+     real*8 Ck
+             1
+Error: Unexpected data declaration statement at (1)
+lect_rawdata.f90:21:32:
+
+     character (len=100) :: CHFMT
+                                1
+Error: Unexpected data declaration statement at (1)
+lect_rawdata.f90:8:41:
+
+ integer function lect_ficCal_gravi(nomfic)
+                                         1
+Error: Symbol 'nomfic' at (1) has no IMPLICIT type
+lect_rawdata.f90:25:16:
+
+     WRITE (CHFMT,501) '(A9,A',len_trim(nomfic),')' 
+                1
+Error: Symbol 'chfmt' at (1) has no IMPLICIT type
+lect_rawdata.f90:38:36:
+
+         read(14,'(A80)',end=669)line
+                                    1
+Error: Symbol 'line' at (1) has no IMPLICIT type
+lect_rawdata.f90:40:42:
+
+         call decoupe_ligne(line,tabline,nc)
+                                          1
+Error: Symbol 'nc' at (1) has no IMPLICIT type
+lect_rawdata.f90:23:9:
+
+     valid = .true.
+         1
+Error: Symbol 'valid' at (1) has no IMPLICIT type
+lect_rawdata.f90:42:29:
+
+             if  (strisnumber(tabline(3))) then
+                             1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:47:29:
+
+             if  (strisnumber(tabline(3))) then
+                             1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:73:29:
+
+             if  (strisnumber(tabline(3))) then
+                             1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:75:45:
+
+                 TabGravi(ngravimeter)%Serial=tabline(1)
+                                             1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:76:32:
+
+                 if (strisnumber(tabline(2))) then
+                                1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:77:25:
+
+                     read(tabline(2),'(I8)')TabGravi(ngravimeter)%Num
+                         1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:81:21:
+
+                 read(tabline(2),'(A1)')TabGravi(ngravimeter)%N
+                     1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:82:54:
+
+                 TabGravi(ngravimeter)%Cf = str2double(tabline(3))
+                                                      1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:87:29:
+
+             if  (strisnumber(tabline(3))) then
+                             1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:89:45:
+
+                 TabGravi(ngravimeter)%Serial=tabline(1)
+                                             1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:90:32:
+
+                 if (strisnumber(tabline(2))) then 
+                                1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:91:25:
+
+                     read(tabline(2),'(I8)')TabGravi(ngravimeter)%Num
+                         1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:95:21:
+
+                 read(tabline(2),'(A1)')TabGravi(ngravimeter)%N
+                     1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:96:54:
+
+                 TabGravi(ngravimeter)%Cf = str2double(tabline(3))
+                                                      1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+lect_rawdata.f90:98:20:
+
+                 if (tabline(4)=='Y') then
+                    1
+Error: Function 'tabline' at (1) has no IMPLICIT type
+make: *** [lect_rawdata.o] Error 1

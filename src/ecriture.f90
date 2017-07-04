@@ -152,9 +152,9 @@ subroutine W_cal_gravi()
         write(67,*)'Numero de série, numero dans CG3TOOL.init, Coefficient d''étalonnage'
         do k=1,ngravimeter
             if (TabGravi(k)%Estimate) then
-                write(67,'(1x,A8,1x,A1,2x,F12.10,1x,A6)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'estimé'
+                write(67,'(1x,A8,1x,A3,2x,F12.10,1x,A6)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'estimé'
             else
-                write(67,'(1x,A8,1x,A1,2x,F12.10,1x,A5)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'connu'
+                write(67,'(1x,A8,1x,A3,2x,F12.10,1x,A5)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'connu'
             end if
         end do
     else
@@ -163,9 +163,9 @@ subroutine W_cal_gravi()
         write(67,*)'Serial #, CG3TOOL.init #, Calibration factor'
         do k=1,ngravimeter
             if (TabGravi(k)%Estimate) then
-                write(67,'(1x,A8,1x,A1,2x,F12.10,1x,A9)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'Estimated'
+                write(67,'(1x,A8,1x,A3,2x,F12.10,1x,A9)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'Estimated'
             else
-                write(67,'(1x,A8,1x,A1,2x,F12.10,1x,A5)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'Known'
+                write(67,'(1x,A8,1x,A3,2x,F12.10,1x,A5)')TabGravi(k)%Serial, TabGravi(k)%N, TabGravi(k)%Cf,'Known'
             end if
         end do
     end if

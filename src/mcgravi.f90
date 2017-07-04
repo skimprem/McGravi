@@ -280,7 +280,9 @@ module mcgravi_main
 ! 3.0.4  03/03/2015 : 1. modification de parameter (nmax=100000,max=10000000) -ancienne valeur 5000000 dans sparse_cholesky.f90
 !                     2. ajout du nouveau type d'entete des fichiers A10 issus du logiciel g9   
 !
-! 
+! 3.0.5  04/07/2017 : 1. construction des numéros gravi avec 3 caractères : xYY où x est un caractère alphanumérique et YY est l'année courante
+!                     2. Mode 2 : les inconnues de calibration en entrée sont récupérées dans le fichier de calib et pas fixées à 1.0000000 
+!
 ! note ifort : Le compilateur initialise mal les variables. Dans ce cas, il faut aller dans Projet\Propriétés de MC Gravi\Propriétés
 ! de configuration\Fortran\Data\Local Variable Storage\ et sélectionner : All variables SAVE
 ! 
@@ -293,7 +295,7 @@ character(len=40) function VERSION()
     
     ! Numéro de version du logiciel ***********************************************
     
-    character (len=40),parameter :: num_version='mcgravi 3.0.4  03/03/2015'
+    character (len=40),parameter :: num_version='mcgravi 3.0.5  04/07/2017'
     
     ! *****************************************************************************
     
@@ -395,7 +397,7 @@ integer function MCGRAVI(nomfic_conf)
 	
     ! Reading gravimeter calibration file ***************************
     if (param%calf) then
-        if (lg=='F') then ; write(0,*)readcalF ; else ; write(0,*)readcalA ; end if
+        if (lg=='F') then ; write(0,*)readcalF,param%nomficcal ; else ; write(0,*)readcalA,param%nomficcal ; end if
         code = lect_ficCal_gravi(param%nomficcal)
         if (code == 102) then
             if (lg=='F') then ; write(0,*)invalidcalF ; else ; write(0,*)invalidcalA ; end if

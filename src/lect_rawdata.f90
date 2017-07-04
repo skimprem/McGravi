@@ -6,6 +6,7 @@ contains
 
 
 integer function lect_ficCal_gravi(nomfic)
+    
     use Raw_data
     use util_str
     use param_data
@@ -18,7 +19,7 @@ integer function lect_ficCal_gravi(nomfic)
     logical valid
     real*8 Ck
     character (len=100) :: CHFMT
- 
+   
     valid = .true.
     ! ouverture du fichier de calibration des gravis
     WRITE (CHFMT,501) '(A9,A',len_trim(nomfic),')' 
@@ -26,16 +27,40 @@ integer function lect_ficCal_gravi(nomfic)
     if (param%verbose) write(0,FMT=CHFMT)' Loading ',nomfic
 
     !if (param%verbose) write(0,*)nomfic
+    ! Modif slavoue 07/2017 : augmentation du nombre de gravimètres possibles
+    ! on commence par compter le nombre de gravimètres pour allouer TabGravi avec le bon nombre
+    open(14,file=nomfic)
+    ngravimeter=0
+    do while(.true.)
+        read(14,'(A80)',end=669)line
+        call decoupe_ligne(line,tabline,nc)
+        if (nc==3) then ! on garde ce bloc pour conserver la compatibilité avec la version 1
+            if  (strisnumber(tabline(3))) then
+                ngravimeter=ngravimeter+1
+            end if
+        end if
+        if (nc==4) then
+            if  (strisnumber(tabline(3))) then
+                ngravimeter=ngravimeter+1
+            end if
+        end if
+    end do 
+    669 continue
+    close(14)
+    write(0,*)'Number of gravimeters in calibration file :',ngravimeter
+    
     open(14,file=nomfic)
     
     !501 write(0,'(A19,x,A12)')'file open failed : ',nomfic;stop
     
-    ngravimeter=0
-
-    ! on suppose qu'on aura au maximum 36 gravimètres. OUPS !
+    
+    
+    ! on alloue avec le nombre de gravi comptés
     if (allocated(tabgravi)) deallocate(tabgravi)
-    allocate (TabGravi(36))
-
+    allocate (TabGravi(ngravimeter))
+    
+    ngravimeter=0
+    
     do while(.true.)
         read(14,'(A80)',end=668)line
 
@@ -49,7 +74,7 @@ integer function lect_ficCal_gravi(nomfic)
                 else
                     TabGravi(ngravimeter)%Num = ngravimeter
                 end if
-                read(tabline(2),'(A1)')TabGravi(ngravimeter)%N
+                read(tabline(2),'(A3)')TabGravi(ngravimeter)%N
                 TabGravi(ngravimeter)%Cf = str2double(tabline(3))
                 TabGravi(ngravimeter)%estimate = .false.   
             end if
@@ -63,7 +88,7 @@ integer function lect_ficCal_gravi(nomfic)
                 else
                     TabGravi(ngravimeter)%Num = ngravimeter
                 end if
-                read(tabline(2),'(A1)')TabGravi(ngravimeter)%N
+                read(tabline(2),'(A3)')TabGravi(ngravimeter)%N
                 TabGravi(ngravimeter)%Cf = str2double(tabline(3))
                 TabGravi(ngravimeter)%pos = 0
                 if (tabline(4)=='Y') then
@@ -86,7 +111,9 @@ integer function lect_ficCal_gravi(nomfic)
     else 
         lect_ficCal_gravi=102
     end if
-
+    !do k=1,ngravimeter
+    !    write(0,*)TabGravi(k)%serial,TabGravi(k)%N,TabGravi(k)%Cf,TabGravi(k)%Estimate
+    !end do
 end function lect_ficCal_gravi
 
 
@@ -545,7 +572,7 @@ integer function lect_fic_r(nomfic,rep,sf,sa)
     character (len=255) tabline(20)
     logical valid,trouve,valid_format,exists,valid_format_r
     integer numgravi,code,ok
-    character (len=1) Ngravi
+    character (len=3) Ngravi
     real*8 Cf,heure,site_corr,sf,sa,day,month, hour,gravi, maree
     type (Tprofil) , allocatable, dimension(:):: tabprofil2
     character (len=8) serial
@@ -573,7 +600,7 @@ integer function lect_fic_r(nomfic,rep,sf,sa)
     if (param%calf) then
         ! on cherche le gravimetre et sa coNb_stante Cf
         !numgravi=char2int(nomfic(5:5))
-        Ngravi = nomfic(5:5)
+        Ngravi = nomfic(5:5)//nomfic(7:8)
         trouve=.false.
         do k=1,ngravimeter
             !if (numgravi==TabGravi(k)%Num) then
@@ -587,7 +614,7 @@ integer function lect_fic_r(nomfic,rep,sf,sa)
         if (.not. trouve) then
             Cf=1.0D0
             serial = 'inconnu'
-            write(0,'(A5,A12,A14,A1,A31)')'file ',nomfic,' : gravimeter ',Ngravi,' not found. Cf set to 1.0000000'
+            write(0,'(A5,A12,A14,A3,A31)')'file ',nomfic,' : gravimeter ',Ngravi,' not found. Cf set to 1.0000000'
         end if
     else
         Cf=1.0D0
@@ -761,7 +788,7 @@ integer function lect_fic_c(nomfic,rep,sf,sa)
     !,sd_too_small
     logical fic_s_exist, hauteur_trouvee
     integer numgravi,code,hh
-    character (len=1) Ngravi
+    character (len=3) Ngravi
     !character (len=1) typefic ! fichier "c" ou fichier "o"
     real*8 Cf,heure,site_corr,sf,sa,day,month, hour,gravi, maree, grad
     type (Tprofil) , allocatable, dimension(:):: tabprofil2
@@ -805,19 +832,20 @@ integer function lect_fic_c(nomfic,rep,sf,sa)
     !505 write(0,'(A19,x,A12)')'file open failed : ',file1;stop
     if (param%calf) then
         ! on cherche le gravimetre et sa coNb_stante Cf
-        Ngravi = nomfic(5:5)
+        Ngravi = nomfic(5:5)//nomfic(7:8)
         trouve=.false.
-        do k=1,ngravimeter     
+        do k=1,ngravimeter 
             if (Ngravi .EQ. TabGravi(k)%N) then
                 trouve=.true.
                 Cf=TabGravi(k)%Cf
                 serial = TabGravi(k)%serial
+                !write(0,*)'Gravi trouve : ', TabGravi(k)%serial,TabGravi(k)%N,TabGravi(k)%Cf,TabGravi(k)%Estimate
             end if
         end do
         if (.not. trouve) then
             Cf=1.0D0
             serial = 'inconnu'
-            write(0,'(A5,A12,A14,A1,A31)')'file ',nomfic,' : gravimeter ',Ngravi,' not found. Cf set to 1.0000000'
+            write(0,'(A5,A12,A14,A3,A31)')'file ',nomfic,' : gravimeter ',Ngravi,' not found. Cf set to 1.0000000'
         end if
     else
         Cf=1.0D0
@@ -1140,7 +1168,7 @@ integer function lect_fic_o(nomfic,rep,sf,sa)
     character (len=80) heure
     logical valid,trouve,valid_format !,sd_too_small
     integer numgravi
-    character (len=1) Ngravi ! caractère destiné a faire le lien avec le fichier de calibration (destiné
+    character (len=3) Ngravi ! caractère destiné a faire le lien avec le fichier de calibration (destiné
     ! à remplacer numgravi
     character (len=1) typefic ! fichier "c" ou fichier "o"
     real*8 Cf,sf,sa,Ddum,Dmm, Dss, Dhh
@@ -1155,7 +1183,6 @@ integer function lect_fic_o(nomfic,rep,sf,sa)
     integer nTabObs_N_trie
     type (Tobs) Tmp_obs
     ! les observations des fichiers scintrex ne sont pas triées on les lit d'abord dans l'ordre et on trie après
-
 
 
     LENrep = len_trim(rep)
@@ -1190,21 +1217,18 @@ integer function lect_fic_o(nomfic,rep,sf,sa)
     if (jour/=0 .and. year/=0) then
         mja = mjd2mja(jour,year)
     end if
-    
     open(10,file=nom_complet)
     !505 write(0,'(A19,x,A12)')'file open failed : ',file1;stop
     if (param%calf) then
         ! on cherche le gravimetre et sa coNb_stante Cf
         !numgravi=char2int(nomfic(5:5))
-        Ngravi=nomfic(5:5)
+        Ngravi=nomfic(5:5)//nomfic(7:8)
         !write(0,*)numgravi
         trouve=.false.
         do k=1,ngravimeter
             !if (numgravi==TabGravi(k)%Num) then
-            
             if (Ngravi .EQ. TabGravi(k)%N) then
                 trouve=.true.
-
                 Cf=TabGravi(k)%Cf
                 serial = TabGravi(k)%serial
             end if
@@ -1212,7 +1236,7 @@ integer function lect_fic_o(nomfic,rep,sf,sa)
         if (.not. trouve) then
             Cf=1.0D0
             serial = 'inconnu'
-            write(0,'(A5,A12,A14,I1,A31)')'file ',nomfic,' : gravimeter ',numgravi,' not found. Cf set to 1.0000000'
+            write(0,'(A5,A12,A14,A3,A31)')'file ',nomfic,' : gravimeter ',Ngravi,' not found. Cf set to 1.0000000'
         end if
     else
         Cf=1.0D0
@@ -1732,7 +1756,7 @@ integer function Rempli_pos_Inc_Calib()
     do j=1,nGravimeter
         if (TabGravi(j)%Estimate) param%ngravi_Cal = param%ngravi_Cal + 1     
     end do
-
+    write(0,*)'Nombre inconnues calib : ', param%ngravi_Cal
     ! position des inconnues de calibration
     nb = param%Nb_sta + Nb_profil * (param%drift_k + param%drift_t) 
     ncal = 0 
@@ -1741,15 +1765,16 @@ integer function Rempli_pos_Inc_Calib()
             ncal = ncal + 1
         end if 
         do j=1,Nb_profil
-        
+
             if ((TabGravi(i)%serial == TabProfil(j)%serial) .and. (TabGravi(i)%N .EQ. TabProfil(j)%Ngravi)) then
             !if (TabProfil(j)%serial==TabGravi(i)%Serial) then ! modif 2.3.18
-                    if (TabGravi(i)%Estimate) then 
-                        TabProfil(j)%posInc = ncal + nb
-                        TabGravi(i)%pos = TabProfil(j)%posInc       
-                    else
-                        TabProfil(j)%posInc = 0
-                    end if
+                if (TabGravi(i)%Estimate) then 
+                    TabProfil(j)%posInc = ncal + nb
+                    TabGravi(i)%pos = TabProfil(j)%posInc       
+                    !write(0,*)'tabgravi inconnu pos : ',TabGravi(i)%pos
+                else
+                    TabProfil(j)%posInc = 0
+                end if
             end if
         end do
         

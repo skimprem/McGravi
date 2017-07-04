@@ -131,10 +131,11 @@ integer function Init_Mc_Cal(MC,type_calc)
     ! valeur initiale des inconnues de calibration
     do k=1,ngravimeter
         if (TabGravi(k)%Estimate) then 
-            !write(0,*)TabGravi(k)%serial,TabGravi(k)%pos
+            write(0,*)TabGravi(k)%serial,TabGravi(k)%N,TabGravi(k)%Cf,TabGravi(k)%pos
             MC%X0(TabGravi(k)%pos) = TabGravi(k)%Cf 
+
             ! a modifier jbl 2007-136  ************************************************    
-            MC%X0(TabGravi(k)%pos) = 1.0d0     
+            !MC%X0(TabGravi(k)%pos) = 1.0d0     
         end if
     end do
     

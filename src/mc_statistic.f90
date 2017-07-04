@@ -1047,7 +1047,7 @@ integer function solution2(A,X,N,mode,C)
       allocate(work(N))
       
       nsing=0
-      if(mode .LT. 0 .or. mode .GT. 3) stop'incorrect mode'
+      if(mode .LT. 0 .or. mode .GT. 3) stop 'incorrect mode'
       
       !write(0,*)'debut Cholesky'
       

@@ -336,7 +336,7 @@ integer function SOLUTION(A,X,N,mode,C)
       allocate(work(N))
       
       nsing=0
-      if(mode.lt.0 .or. mode.gt.3) stop'incorrect mode'
+      if(mode.lt.0 .or. mode.gt.3) stop 'incorrect mode'
       
       DO 1 K=1,N
         kk=k*(k-1)/2
