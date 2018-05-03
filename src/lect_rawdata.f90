@@ -576,7 +576,7 @@ integer function lect_fic_r(nomfic,rep,sf,sa)
     type (Tprofil) , allocatable, dimension(:):: tabprofil2
     character (len=8) serial
     character (len=100) :: CHFMT 
-    write(0,*)nomfic,1
+
     LENrep = len_trim(rep)
     LENnomfic = len_trim(nomfic)
     nom_complet_r = ''    
@@ -588,7 +588,7 @@ integer function lect_fic_r(nomfic,rep,sf,sa)
 
     WRITE (CHFMT,501) '(A9,A',len_trim(nom_complet_r),')' 
     501 FORMAT (A,I2,A)
-   if (param%verbose) write(0,FMT=CHFMT)' Loading ',nom_complet_r    
+    if (param%verbose) write(0,FMT=CHFMT)' Loading ',nom_complet_r    
 
     open(10,file=nom_complet_r, iostat=ok)
     if (ok/=0) then
