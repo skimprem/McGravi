@@ -80,7 +80,6 @@ integer function Read_config_file(nomfic,p)
     allocate(p%tabCoordFic(datablock))
     
     allocate(p%TabParam(5000))
-
     write(0,*)'Reading ', nomfic(1:len_trim(nomfic))
     open(20,file=nomfic)     
     unit_nb = 500

@@ -6,7 +6,6 @@ contains
 
 
 integer function lect_ficCal_gravi(nomfic)
-    
     use Raw_data
     use util_str
     use param_data
@@ -546,7 +545,7 @@ integer function lect_obsrel()
         end if
        end if
     end do
-    
+
     call reduit_tabobs ()
     
     
@@ -577,7 +576,7 @@ integer function lect_fic_r(nomfic,rep,sf,sa)
     type (Tprofil) , allocatable, dimension(:):: tabprofil2
     character (len=8) serial
     character (len=100) :: CHFMT 
-
+    write(0,*)nomfic,1
     LENrep = len_trim(rep)
     LENnomfic = len_trim(nomfic)
     nom_complet_r = ''    
@@ -1062,7 +1061,6 @@ subroutine reduit_tabobs ()
     integer i,ntabobsred,cpt
     real*8 somme_ponderee_grav,somme_sd,somme_sd_carre,somme_mjd,somme_tempK
     integer npts_consecutifs
-    
     allocate (TabObs2(nTabObs))
 
     write(0,'(A,I2,A)')' Maximum duration for point occupation : ', FLOOR(param%delai_max),' min'
@@ -1077,8 +1075,9 @@ subroutine reduit_tabobs ()
     
     ntabobsred=0
     do i=1,nTabObs
-        !write (0,*) tabobs(i)%numsta
-        
+        ! write(0,*)i,1
+        ! write(0,*)tabobs(i)%nomsta
+        ! write(0,*)tabobs(i)%grav
         ! à chaque tour on empile une observation de plus sauf si ...
 
         somme_ponderee_grav = somme_ponderee_grav + tabobs(i)%grav/tabobs(i)%sd
@@ -1086,24 +1085,51 @@ subroutine reduit_tabobs ()
         somme_mjd = somme_mjd + tabobs(i)%mjd/tabobs(i)%sd 
         somme_tempK = somme_tempK + tabobs(i)%tempK/tabobs(i)%sd
         npts_consecutifs = npts_consecutifs +1
+        
+        if (i<size(tabobs)) then !pour si jamais par le plus grand des hasard, le nombre d'obs remplit exactement le tableau de n*150 elements
+            if (trim(tabobs(i)%nomsta) .NE. trim(tabobs(i+1)%nomsta)  & 
+                & .OR. tabobs(i)%profil .NE. tabobs(i+1)%profil &
+                & .OR. ( (tabobs(i+1)%mjd - tabobs(i)%mjd)*1440.0D0 .GT. param%delai_max ) &
+                & .AND. trim(tabobs(i)%nomsta) .EQ. trim(tabobs(i+1)%nomsta)) then
+                
+            !IF (trim(tabobs(i)%nomsta) .NE. trim(tabobs(i+1)%nomsta) &
+            !   & .OR. (tabobs(i)%profil .NE. tabobs(i+1)%profil) &
+            !   & .OR. ( abs(tabobs(i)%mjd - tabobs(cpt)%mjd)*1440.D0 .GT. param%delai_max &
+            !   & .AND. trim(tabobs(cpt)%nomsta) .EQ. trim(tabobs(i)%nomsta) ) )  THEN
+                
+                ! ... sauf si :
+                ! - on change de profil
+                ! - on change de point
+                ! - delai_max est dépassé
 
-        if (trim(tabobs(i)%nomsta) .NE. trim(tabobs(i+1)%nomsta)  & 
-            & .OR. tabobs(i)%profil .NE. tabobs(i+1)%profil &
-            & .OR. ( (tabobs(i+1)%mjd - tabobs(i)%mjd)*1440.0D0 .GT. param%delai_max ) &
-            & .AND. trim(tabobs(i)%nomsta) .EQ. trim(tabobs(i+1)%nomsta)) then
+                ! si ces conditions sont remplie, on ajoute un obs à TabObs2 ...
+     
+                ntabobsred=ntabobsred+1
+                
+                tabobs2(ntabobsred)%nomsta=tabobs(i)%nomsta
+                tabobs2(ntabobsred)%grav=somme_ponderee_grav/somme_sd
+                tabobs2(ntabobsred)%sd=(DBLE(npts_consecutifs)**0.5D0)/somme_sd 
+                tabobs2(ntabobsred)%mjd=somme_mjd/somme_sd
+                tabobs2(ntabobsred)%tempK=somme_tempK/somme_sd
+                tabobs2(ntabobsred)%Cf=tabobs(i)%Cf
+                tabobs2(ntabobsred)%date=tabobs(i)%date
+                tabobs2(ntabobsred)%heure=tabobs(i)%heure
+                tabobs2(ntabobsred)%profil=tabobs(i)%profil
+                tabobs2(ntabobsred)%grad=tabobs(i)%grad
+                tabobs2(ntabobsred)%h=tabobs(i)%h
 
-        !IF (trim(tabobs(i)%nomsta) .NE. trim(tabobs(i+1)%nomsta) &
-        !   & .OR. (tabobs(i)%profil .NE. tabobs(i+1)%profil) &
-        !   & .OR. ( abs(tabobs(i)%mjd - tabobs(cpt)%mjd)*1440.D0 .GT. param%delai_max &
-        !   & .AND. trim(tabobs(cpt)%nomsta) .EQ. trim(tabobs(i)%nomsta) ) )  THEN
-            
-            ! ... sauf si :
-            ! - on change de profil
-            ! - on change de point
-            ! - delai_max est dépassé
-
-            ! si ces conditions sont remplie, on ajoute un obs à TabObs2 ...
- 
+                ! et on réinitialise la pile
+                
+                somme_ponderee_grav=0.0D0
+                somme_sd=0.0D0
+                somme_sd_carre=0.0D0
+                somme_mjd=0.0D0
+                somme_tempK=0.0D0
+                npts_consecutifs=0
+             !   cpt=i
+                
+            end if
+        else
             ntabobsred=ntabobsred+1
             
             tabobs2(ntabobsred)%nomsta=tabobs(i)%nomsta
@@ -1127,7 +1153,6 @@ subroutine reduit_tabobs ()
             somme_tempK=0.0D0
             npts_consecutifs=0
          !   cpt=i
-            
         end if
     end do
      

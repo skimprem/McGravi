@@ -318,7 +318,7 @@ subroutine WHTML_observation_rel()
             write(70,FMT=chfmt)"<BR><A NAME=""",tabprofil(obs%profil)%nomfic,"""></A>"
             write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
 
-            write(70,'(A13,A7,1x,I2,4x,A9,A20,1x,A10,F10.6,1x,A18,A8,A15)')"<CAPTION><H4>",'Profil ',obs%profil,&
+            write(70,'(A13,A7,1x,I4,4x,A9,A20,1x,A10,F10.6,1x,A18,A8,A15)')"<CAPTION><H4>",'Profil ',obs%profil,&
             &' fichier ',tabprofil(obs%profil)%nomfic,&
             &' - Cf = ',obs%Cf,&
             &' - Mar&eacute;e : ',tabprofil(obs%profil)%Tide,&
@@ -395,7 +395,7 @@ subroutine WHTML_difference_gravite()
             write(70,FMT=chfmt)"<BR><A NAME=""",tabprofil(obs%profil)%nomfic,"""></A>"
             write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
 
-            101 format (A15,A7,1x,I2,2x,A7,1x,A12,2x,A5,F10.6,2x,A5,F9.5,2x,A5,F5.2,A15)
+            101 format (A15,A7,1x,I4,2x,A7,1x,A12,2x,A5,F10.6,2x,A5,F9.5,2x,A5,F5.2,A15)
             write(70,101)"<CAPTION><H4>",&
                 &'Profil ',obs_rel%profil,&
                 &'fichier',tabprofil(obs_rel%profil)%nomfic,&

@@ -3,7 +3,7 @@ module raw_data
 
 implicit none
 
-integer, parameter :: datablock=150 
+integer, parameter :: datablock=150
 ! Les tableaux sont alloués par blocs de 'datablock' enregistrements
 ! Si on se rend compte qu'on dépasse la taille limite on copie les éléments 
 ! dans un autre tableau et on réalloue un "datablock" de plus

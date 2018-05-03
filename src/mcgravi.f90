@@ -283,6 +283,9 @@ module mcgravi_main
 ! 3.0.5  04/07/2017 : 1. construction des numéros gravi avec 3 caractères : xYY où x est un caractère alphanumérique et YY est l'année courante
 !                     2. Mode 2 : les inconnues de calibration en entrée sont récupérées dans le fichier de calib et pas fixées à 1.0000000 
 !
+! 3.0.6  03/05/2018 : 1. Ajout d'un test si le nombre d'obs relatives remplit exactement le tableau d'obs qui a une taille de n*150
+!                     2. Cosmétique numéro de profil dans le HTML de résultats, affichage des nb d'obs rel et abs dans la console
+!
 ! note ifort : Le compilateur initialise mal les variables. Dans ce cas, il faut aller dans Projet\Propriétés de MC Gravi\Propriétés
 ! de configuration\Fortran\Data\Local Variable Storage\ et sélectionner : All variables SAVE
 ! 
@@ -295,7 +298,7 @@ character(len=40) function VERSION()
     
     ! Numéro de version du logiciel ***********************************************
     
-    character (len=40),parameter :: num_version='mcgravi 3.0.5  04/07/2017'
+    character (len=40),parameter :: num_version='mcgravi 3.0.6  03/05/2018'
     
     ! *****************************************************************************
     
@@ -440,7 +443,7 @@ integer function MCGRAVI(nomfic_conf)
          
     end if
 
-    !write(0,*)'Nb obs A10 : ',param%Nb_obsAbs
+    write(0,*)'Nb obs absolues : ',param%Nb_obsAbs
 
     ! Reading relative gravity observation ****************************************
     Ntabobs=0    ! observation number
@@ -452,6 +455,7 @@ integer function MCGRAVI(nomfic_conf)
         MCgravi = code 
         return
     end if 
+    write(0,*)'Nb profils gravi relative : ',Nb_profil
 
     ch = 'Setting parameters'
     call W_time(ch)
