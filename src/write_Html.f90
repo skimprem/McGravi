@@ -8,7 +8,7 @@ subroutine Whtml_cpfic()
     implicit none
 
     integer lcmd, ls
-    character (len=100) f_result
+    character (len=150) f_result
     logical(4) resultat
     integer(4) resultatI  
     
@@ -984,7 +984,6 @@ subroutine WHTML_synthese(MC,mode,nom)
     real*8 resNorm,resnorm2,tau
     integer nb_oa,w,k,i
     character (len=10) test
-    
     if (mode==1) then
         nb_oa = 1;
     else
@@ -1007,13 +1006,13 @@ subroutine WHTML_synthese(MC,mode,nom)
     
     write(70,*)"<BR><TABLE CELLPADDING=3 BORDER=""1"">"
     write(70,*)"<CAPTION><H4>Inconnues de Pesanteur</H4></CAPTION>"   
-    write(70,56)"<TR><TD>",'Ecart-type maximum sur les inconnues',&
+    write(70,*)"<TR><TD>",'Ecart-type maximum sur les inconnues',&
     &"</TD><TD>",MC%sgmax,"</TD></TR>"
-    write(70,56)"<TR><TD>",'Ecart-type minimum sur les inconnues',&
+    write(70,*)"<TR><TD>",'Ecart-type minimum sur les inconnues',&
     &"</TD><TD>",MC%sgmin,"</TD></TR>"
-    write(70,56)"<TR><TD>",'Ecart-type moyen sur les inconnues',&
+    write(70,*)"<TR><TD>",'Ecart-type moyen sur les inconnues',&
     &"</TD><TD>",MC%sgmean,"</TD></TR>"
-    write(70,56)"<TR><TD>",'RMS de l''&eacute;cart-type sur les inconnues',&
+    write(70,*)"<TR><TD>",'RMS de l''&eacute;cart-type sur les inconnues',&
     &"</TD><TD>",MC%sgrms,"</TD></TR>"
     write(70,*)"</TABLE>"  
     

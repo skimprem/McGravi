@@ -286,6 +286,7 @@ module mcgravi_main
 ! 3.0.6  03/05/2018 : 1. Ajout d'un test si le nombre d'obs relatives remplit exactement le tableau d'obs qui a une taille de n*150
 !                     2. Cosmétique numéro de profil dans le HTML de résultats, affichage des nb d'obs rel et abs dans la console
 !
+! 3.0.7 09/05/2018 : 1. augmentation de la longueur maximale du nom de fichier html en sortie du calcul
 ! note ifort : Le compilateur initialise mal les variables. Dans ce cas, il faut aller dans Projet\Propriétés de MC Gravi\Propriétés
 ! de configuration\Fortran\Data\Local Variable Storage\ et sélectionner : All variables SAVE
 ! 
@@ -298,7 +299,7 @@ character(len=40) function VERSION()
     
     ! Numéro de version du logiciel ***********************************************
     
-    character (len=40),parameter :: num_version='mcgravi 3.0.6  03/05/2018'
+    character (len=40),parameter :: num_version='mcgravi 3.0.7  09/05/2018'
     
     ! *****************************************************************************
     
