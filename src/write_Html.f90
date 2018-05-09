@@ -189,7 +189,7 @@ subroutine WHTML_liste_nomficrel()
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
     write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
     write(70,*)"<CAPTION><H4>Fichiers d'observations relatives</H4></CAPTION>"
-    write(70,*)"<TR><TD>Num</TD><TD>Fichier</TD><TD>Facteur</TD><TD>Terme additif</TD><TD></TD></TR>"
+    write(70,*)"<TR><TD>Num</TD><TD>Fichier</TD><TD>Facteur</TD><TD>Terme additif</TD></TR>"
 
     do k=1,param%nDataFic
         Dfic = param%TabDataFic(k)
@@ -273,7 +273,7 @@ subroutine WHTML_liste_nomficA10()
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
     write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
     write(70,*)"<CAPTION><H4>Fichiers d'observations de gravim&egrave;tre A10</H4></CAPTION>"
-    write(70,*)"<TR><TD>Fichier</TD><TD>Facteur</TD><TD>Terme additif</TD><TD></TD></TR>"
+    write(70,*)"<TR><TD>Fichier</TD><TD>Facteur</TD><TD>Terme additif</TD></TR>"
 
     do k=1,param%nDataFic
     
@@ -567,7 +567,7 @@ subroutine WHTML_gravity(MC)
 
     DO I=1,MC%Nb_sta
         WRITE(70,101)"<TR><TD>",MC%stat(i),"</TD><TD>",MC%X(i),"</TD><TD>",MC%Sig(i),"</TD></TR>"
-        101 format (A8,a8,A9,F12.3,A9,f9.3,A10)
+        101 format (A8,a8,A9,F12.3,A9,f12.3,A10)
     END DO
     
     write(70,*)"</TABLE>"    
@@ -992,7 +992,7 @@ subroutine WHTML_synthese(MC,mode,nom)
     
     w = len_trim(nom)
     
-    56 format (A10,A40,A10,f9.3,A10)
+    56 format (A10,A40,A10,f12.3,A10)
     write(70,*)"<BR><HR><A NAME=""",nom,"""></A>"
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
     
@@ -1006,13 +1006,13 @@ subroutine WHTML_synthese(MC,mode,nom)
     
     write(70,*)"<BR><TABLE CELLPADDING=3 BORDER=""1"">"
     write(70,*)"<CAPTION><H4>Inconnues de Pesanteur</H4></CAPTION>"   
-    write(70,*)"<TR><TD>",'Ecart-type maximum sur les inconnues',&
+    write(70,56)"<TR><TD>",'Ecart-type maximum sur les inconnues',&
     &"</TD><TD>",MC%sgmax,"</TD></TR>"
-    write(70,*)"<TR><TD>",'Ecart-type minimum sur les inconnues',&
+    write(70,56)"<TR><TD>",'Ecart-type minimum sur les inconnues',&
     &"</TD><TD>",MC%sgmin,"</TD></TR>"
-    write(70,*)"<TR><TD>",'Ecart-type moyen sur les inconnues',&
+    write(70,56)"<TR><TD>",'Ecart-type moyen sur les inconnues',&
     &"</TD><TD>",MC%sgmean,"</TD></TR>"
-    write(70,*)"<TR><TD>",'RMS de l''&eacute;cart-type sur les inconnues',&
+    write(70,56)"<TR><TD>",'RMS de l''&eacute;cart-type sur les inconnues',&
     &"</TD><TD>",MC%sgrms,"</TD></TR>"
     write(70,*)"</TABLE>"  
     
