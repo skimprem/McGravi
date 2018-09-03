@@ -587,23 +587,30 @@ subroutine W_gravity(MC,unite)
     
     write(67,*)''
     
+    open(182,file = param%dossier(1:len_trim(param%dossier))//"\pesanteur_compensee.txt")
+
     if (unite==67) then 
         if (param%lg=='F') then
             WRITE(unite,*)WgravF
             WRITE(unite,*)'Nom, Pesanteur compensee (mgal), SD (mgal)' 
+            WRITE(182,*)WgravF
+            WRITE(182,*)'Nom, Pesanteur compensee (mgal), SD (mgal)' 
         else
             WRITE(unite,*)WgravA
             WRITE(unite,*)'Name, Gravity (mgal), SD (mgal)' 
+            WRITE(182,*)WgravF
+            WRITE(182,*)'Name, Gravity (mgal), SD (mgal)'
         end if
         if (param%lg=='F') then ; write(0,*)WgravF ; else ; write(0,*)WgravA ; end if
-        
     end if
     !write(0,*)MC%sigma0
     DO I=1,MC%Nb_sta
-        WRITE(unite,'(1x,a8,3X,F12.3,3x,f9.3)')MC%stat(i),MC%X(i),MC%Sig(i)
+        WRITE(unite,'(1x,a8,3X,F12.3,3x,f12.3)')MC%stat(i),MC%X(i),MC%Sig(i)
+        WRITE(182,'(1x,a8,3X,F12.3,3x,f12.3)')MC%stat(i),MC%X(i),MC%Sig(i)
     END DO
     
     write(67,*)''
+    close(182)
 end subroutine W_gravity
 
 subroutine W_Ecart(MC,unite)

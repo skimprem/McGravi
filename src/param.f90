@@ -135,7 +135,7 @@ subroutine Init_param(p)
     p%type_resid = .false.
     p%sigma_factor = 1.0D0
     P%sigma_add = 0.0D0
-    p%lg='A'
+    p%lg='F'
     p%print_obs=.true.
     p%gradstd = -0.3086D0
     p%NDataFic = 0 

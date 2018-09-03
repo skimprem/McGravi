@@ -290,6 +290,7 @@ module mcgravi_main
 ! 
 ! 3.0.8 03/09/2018 : 1. augmentation de la taille maximale de la matrice dans sparse cholesky
 ! 3.0.9 03/09/2018 : 1. ajout d'un paramètre concernant le nombre de résidus à afficher (NB_RESIDUS_SHOWN)
+! 3.0.10 03/09/2018 : 1. génération d'un fichier contenant les pesanteurs compensées
 !
 ! note ifort : Le compilateur initialise mal les variables. Dans ce cas, il faut aller dans Projet\Propriétés de MC Gravi\Propriétés
 ! de configuration\Fortran\Data\Local Variable Storage\ et sélectionner : All variables SAVE
@@ -303,7 +304,7 @@ character(len=40) function VERSION()
     
     ! Numéro de version du logiciel ***********************************************
     
-    character (len=40),parameter :: num_version='mcgravi 3.0.9  03/09/2018'
+    character (len=40),parameter :: num_version='mcgravi 3.0.10  03/09/2018'
     
     ! *****************************************************************************
     

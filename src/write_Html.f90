@@ -149,6 +149,7 @@ subroutine WHTML_cal_gravi()
     use raw_data
     implicit none
     integer k
+
     ! Ecriture des observations dans le fichier r&eacute;sultat
     
     write(70,*)"<BR><HR><A NAME=""Coef_etal""></A>"
@@ -158,6 +159,7 @@ subroutine WHTML_cal_gravi()
     write(70,*)"<TR><TD>Num&eacute;ro de s&eacute;rie</TD><TD>Num&eacute;ro dans CG3TOOL.init</TD>"
     write(70,*)"<TD>Coefficient d'&eacute;talonnage</TD><TD></TD></TR>"
     101 format (A8,A8,A9,A1,A9,F12.6,A9,1x,A6,A10)
+
     do k=1,ngravimeter
         if (TabGravi(k)%Estimate) then
             write(70,101)"<TR><TD>",TabGravi(k)%Serial,"</TD><TD>", TabGravi(k)%N,"</TD><TD>",&
@@ -169,7 +171,8 @@ subroutine WHTML_cal_gravi()
     end do
      
     write(70,*)"</TABLE>"
-
+    
+    
 end subroutine WHTML_cal_gravi
 
 subroutine WHTML_sigma_coeff()
