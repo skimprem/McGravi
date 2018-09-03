@@ -273,6 +273,9 @@ integer function Parse_config_file(p)
                     p%write_resid=.true. 
                 end if 
                 
+            else if (tabline(1)=='NB_RESIDUS_SHOWN' ) then  
+                read(tabline(2),102)p%Nb_residus_shown
+                
             else if (tabline(1)=='WRITE_TAU' ) then  
                 if (tabline(2)=='Y') then
                     p%write_only_failed_tau_test=.true.

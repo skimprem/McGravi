@@ -60,6 +60,7 @@ implicit none
         logical write_gravity
         logical write_drift
         logical create_r
+        integer Nb_residus_shown
         
         integer Nb_obsAbs
         integer Nb_obsRel
@@ -72,6 +73,8 @@ implicit none
         real*8 lat2
         
         real*8 delai_max        
+        
+
     end type TParam
     
     type TDataFic
@@ -120,6 +123,7 @@ subroutine Init_param(p)
     p%write_drift=.true.
     p%write_resid=.true.
     p%write_only_failed_tau_test=.false.
+    p%Nb_residus_shown = 20
     
     p%create_r=.false.
     p%stop_after_load = .false.
@@ -149,6 +153,8 @@ subroutine Init_param(p)
     p%ch_rm    = 'rm -f  '
     
     p%delai_max=15.0D0
+    
+    
 
 end subroutine Init_param
     

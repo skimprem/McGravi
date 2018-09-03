@@ -61,7 +61,10 @@ subroutine Whtml_menu(mode,sparse)
     use param_data
     implicit none
     logical trouve
-    integer k,mode,sparse
+    integer k,mode,sparse,nobs
+    character (len=3) nobs_str
+    nobs = param%Nb_residus_shown
+    write(nobs_str,'(i3)')nobs
     
     80 format (A130)
     if (sparse==0)  write(70,*)'<P>Calcul avec matrices pleines</P><BR>'
@@ -98,11 +101,12 @@ subroutine Whtml_menu(mode,sparse)
     end if
     
     if (mode==1) then
+        
         write(70,*)'<P><A HREF="#sol_libre">Solution libre</A></P>'
         write(70,*)"<TABLE CELLPADDING=10 BORDER=""0"">"
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#hist1.png">Histogramme</A></P></TD></TR>'
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#synthese1">El&eacute;ments statistiques</A></P></TD></TR>'
-        write(70,80)'<TR><TD> </TD><TD><P><A HREF="#20grosresid1">20 plus gros r&eacute;sidus</A></P></TD></TR>'
+        write(70,80)'<TR><TD> </TD><TD><P><A HREF="#20grosresid1">'//nobs_str//' plus gros r&eacute;sidus</A></P></TD></TR>'
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#tautest1">Tau-test sur les r&eacute;sidus</A></P></TD></TR>'
         if (param%write_gravity) THEN 
             write(70,80)'<TR><TD> </TD><TD><P><A HREF="#grav_comp1">Pesanteur compens&eacute;e</A></P></TD></TR>'
@@ -115,7 +119,7 @@ subroutine Whtml_menu(mode,sparse)
         write(70,*)"<TABLE CELLPADDING=10 BORDER=""0"">"
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#hist1.png">Histogramme</A></P></TD></TR>'
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#synthese1">El&eacute;ments statistiques</A></P></TD></TR>'
-        write(70,80)'<TR><TD> </TD><TD><P><A HREF="#20grosresid1">20 plus gros r&eacute;sidus</A></P></TD></TR>'
+        write(70,80)'<TR><TD> </TD><TD><P><A HREF="#20grosresid1">'//nobs_str//' plus gros r&eacute;sidus</A></P></TD></TR>'
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#tautest1">Tau-test sur les r&eacute;sidus</A></P></TD></TR>'
         if (param%write_gravity) THEN
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#grav_comp1">Pesanteur compens&eacute;e</A></P></TD></TR>'
@@ -128,7 +132,7 @@ subroutine Whtml_menu(mode,sparse)
         write(70,*)"<TABLE CELLPADDING=10 BORDER=""0"">"
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#hist2.png">Histogramme</A></P>'
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#synthese2">El&eacute;ments statistiques</A></P></TD></TR>'
-        write(70,80)'<TR><TD> </TD><TD><P><A HREF="#20grosresid2">20 plus gros r&eacute;sidus</A></P></TD></TR>'
+        write(70,80)'<TR><TD> </TD><TD><P><A HREF="#20grosresid2">'//nobs_str//' plus gros r&eacute;sidus</A></P></TD></TR>'
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#tautest2">Tau-test sur les r&eacute;sidus</A></P></TD></TR>'
         if (param%write_gravity) write(70,80)'<TR><TD> </TD><TD><P><A HREF="#grav_comp2"&
         &>Pesanteur compens&eacute;e avec estimation de la calibration</A></P></TD></TR>'
@@ -712,7 +716,7 @@ subroutine WHTML_20_plus_gros_resid(MC,mode,nom)
     type (Tmc), intent(inout):: MC
     integer mode
     real*8 resNorm,resnorm2
-    integer i,nb_oa,w,k,nobs
+    integer i,nb_oa,w,k,nobs,nobs2
     character (len=*) nom 
     character (len=40) profile
     character (len=40) chfmt
@@ -724,6 +728,14 @@ subroutine WHTML_20_plus_gros_resid(MC,mode,nom)
         nb_oa = MC%nb_obsAbs
     end if
     
+    nobs = param%Nb_residus_shown
+    nobs2 = MC%Nb_obsRel+Nb_oa
+    if (nobs2 >= nobs) then
+        nobs = nobs-1
+    else
+        nobs = nobs2-1
+    end if
+    
     w = len_trim(nom)
     write(chfmt,500)'(A17,A',w,',A6)'
     500 format (A,I2,A)
@@ -732,23 +744,19 @@ subroutine WHTML_20_plus_gros_resid(MC,mode,nom)
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
     write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
     if (param%type_resid) then
-        write(70,*)"<CAPTION><H4>20 plus gros r&eacute;sidus standards</H4></CAPTION>"
+        write(70,*)"<CAPTION><H4>",nobs+1," plus gros r&eacute;sidus standards</H4></CAPTION>"
         write(70,*)"<TR><TD>Point initial</TD><TD>Point final</TD><TD>",&
         &"observation (mGal)</TD><TD>r&eacute;sidu (mGal)</TD><TD>",&
         &"R&eacute;sidu standard</TD><TD>Fichier</TD></TR>"
     else
-        write(70,*)"<CAPTION><H4>20 plus gros r&eacute;sidus normalis&eacute;s</H4></CAPTION>"
+        write(70,*)"<CAPTION><H4>",nobs+1," plus gros r&eacute;sidus normalis&eacute;s</H4></CAPTION>"
         write(70,*)"<TR><TD>Point initial</TD><TD>Point final</TD><TD>",&
         &"observation (mGal)</TD><TD>r&eacute;sidu (mGal)</TD><TD>",&
         &"R&eacute;sidu normalis&eacute;</TD><TD>Fichier</TD></TR>"
     end if
     
     
-    nobs = MC%Nb_obsRel+Nb_oa
-    if (nobs >= 20) then
-        nobs = 19
-    end if 
-    
+
     do i=MC%Nb_obsRel+Nb_oa,MC%Nb_obsRel+Nb_oa-nobs,-1
         if (param%type_resid) then
             resNorm = TabRes_std_sort(i)%std_res
@@ -787,22 +795,22 @@ subroutine WHTML_20_plus_gros_resid(MC,mode,nom)
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
     write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
     if (param%type_resid) then
-        write(70,*)"<CAPTION><H4>20 plus gros r&eacute;sidus</H4></CAPTION>"
+        write(70,*)"<CAPTION><H4>",nobs+1," plus gros r&eacute;sidus</H4></CAPTION>"
         write(70,*)"<TR><TD>Point initial</TD><TD>Point final</TD><TD>",&
         &"observation (mGal)</TD><TD>r&eacute;sidu (mGal)</TD><TD>",&
         &"R&eacute;sidu standard</TD><TD>Fichier</TD></TR>"
     else
-        write(70,*)"<CAPTION><H4>20 plus gros r&eacute;sidus</H4></CAPTION>"
+        write(70,*)"<CAPTION><H4>",nobs+1," plus gros r&eacute;sidus</H4></CAPTION>"
         write(70,*)"<TR><TD>Point initial</TD><TD>Point final</TD><TD>",&
         &"observation (mGal)</TD><TD>r&eacute;sidu (mGal)</TD><TD>",&
         &"R&eacute;sidu normalis&eacute;</TD><TD>Fichier</TD></TR>"
     end if
     
     
-    nobs = MC%Nb_obsRel+Nb_oa
-    if (nobs >= 20) then
-        nobs = 19
-    end if 
+  !  nobs = MC%Nb_obsRel+Nb_oa
+  !  if (nobs >= 20) then
+  !      nobs = 19
+  !  end if 
     
     do i=MC%Nb_obsRel+Nb_oa,MC%Nb_obsRel+Nb_oa-nobs,-1
         if (param%type_resid) then
