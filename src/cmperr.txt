@@ -1,1 +1,23 @@
+gfortran -o Port_routines.o -c  -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check Port_routines_gfortran.f90	
+gfortran -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check -c util_str.f90
+gfortran -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check -c sys_utils.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check str_const.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check raw_data.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check param.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check lect_param.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check lect_rawdata.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_data.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check write_matr.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check rempli_matMC.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check sparse_cholesky.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_inversion.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_simulation.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check ecriture.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check gmt.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check write_Html.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check write_xml.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_statistic.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check BLKFCLT.F
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mcgravi.f90
+gfortran -c -DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check mc_gravi.f90
 gfortran -static -o ../bin/mcgravi mc_gravi.o Port_routines.o util_str.o sys_utils.o str_const.o raw_data.o param.o lect_param.o lect_rawdata.o mc_data.o write_matr.o rempli_matMC.o sparse_cholesky.o mc_inversion.o mc_simulation.o ecriture.o gmt.o write_Html.o write_xml.o mc_statistic.o BLKFCLT.o mcgravi.o 

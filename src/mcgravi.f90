@@ -287,6 +287,9 @@ module mcgravi_main
 !                     2. Cosmétique numéro de profil dans le HTML de résultats, affichage des nb d'obs rel et abs dans la console
 !
 ! 3.0.7 09/05/2018 : 1. augmentation de la longueur maximale du nom de fichier html en sortie du calcul
+! 
+! 3.0.8 03/09/2018 : 1. augmentation de la taille maximale de la matrice dans sparse cholesky
+!
 ! note ifort : Le compilateur initialise mal les variables. Dans ce cas, il faut aller dans Projet\Propriétés de MC Gravi\Propriétés
 ! de configuration\Fortran\Data\Local Variable Storage\ et sélectionner : All variables SAVE
 ! 

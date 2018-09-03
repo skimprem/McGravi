@@ -25,7 +25,7 @@ integer function CHOLESKY(M,neqns,b,mode,c)
 	
 	! Parameters
 	integer*4 max,nmax
-	parameter     (nmax=100000,max=6000000)
+	parameter     (nmax=100000,max=7000000)
     integer*4 mode,neqns
     real*8,dimension(max)::b,c
     real*8,dimension(:,:)::M
@@ -169,7 +169,7 @@ subroutine REORGANIZE_MATRIX(M,a,adjncy,xadj,neqns,nnza)
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 	! Parameters
 	integer*4       nmax,max
-    parameter     (nmax=100000,max=6000000)
+    parameter     (nmax=100000,max=7000000)
 	integer*4      neqns,nnza   ! Number of equations and number of nonzero entries of af
     real*8,dimension(neqns,neqns)::M
 	integer*4      adjncy(max), xadj(nmax) ! row indices and column pointers of the lower triangular part of the matrix
