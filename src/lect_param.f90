@@ -292,6 +292,13 @@ integer function Parse_config_file(p)
                 if (tabline(2)=='N') then
                     p%write_drift=.false.
                 end if  
+            
+            else if (tabline(1)=='SORT_RESULTS') then
+                if (tabline(2)=='N') then
+                    p%sort_results = .false.
+                else if (tabline(2)=='Y') then
+                    p%sort_results = .true.
+                end if
                 
             ! Ecriture dans les rapports de la liste des fichiers
             else if (tabline(1)=='WRITE_LIST_FIC' ) then  

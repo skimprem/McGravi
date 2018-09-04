@@ -111,6 +111,9 @@ subroutine Whtml_menu(mode,sparse)
         if (param%write_gravity) THEN 
             write(70,80)'<TR><TD> </TD><TD><P><A HREF="#grav_comp1">Pesanteur compens&eacute;e</A></P></TD></TR>'
         END IF
+        if (param%write_drift) then
+            write(70,80)'<TR><TD> </TD><TD><P><A HREF="#drift">D&eacute;rives</A></P></TD></TR>'
+        end if
         write(70,*)"</TABLE>"
     end if
     
@@ -124,6 +127,9 @@ subroutine Whtml_menu(mode,sparse)
         if (param%write_gravity) THEN
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#grav_comp1">Pesanteur compens&eacute;e</A></P></TD></TR>'
         END IF
+        if (param%write_drift) then
+            write(70,80)'<TR><TD> </TD><TD><P><A HREF="#drift">D&eacute;rives</A></P></TD></TR>'
+        end if
         write(70,*)"</TABLE>"
     end if
     
@@ -136,8 +142,10 @@ subroutine Whtml_menu(mode,sparse)
         write(70,80)'<TR><TD> </TD><TD><P><A HREF="#tautest2">Tau-test sur les r&eacute;sidus</A></P></TD></TR>'
         if (param%write_gravity) write(70,80)'<TR><TD> </TD><TD><P><A HREF="#grav_comp2"&
         &>Pesanteur compens&eacute;e avec estimation de la calibration</A></P></TD></TR>'
-        if (param%write_drift) write(70,80)'<TR><TD> </TD><TD><P><A HREF=&
-        &"#coeff_calib_out">Coefficients de calibration</A></P></TD></TR>'
+        if (param%write_drift) then
+            write(70,80)'<TR><TD> </TD><TD><P><A HREF="#coeff_calib_out">Coefficients de calibration</A></P></TD></TR>'
+            write(70,80)'<TR><TD> </TD><TD><P><A HREF="#drift2">D&eacute;rives</A></P></TD></TR>'
+        end if
         write(70,*)"</TABLE>"
     end if
       
@@ -147,9 +155,29 @@ end subroutine Whtml_menu
 subroutine WHTML_cal_gravi()
     use param_data
     use raw_data
+    use util_str
     implicit none
-    integer k
-
+    integer k, i, j, indicePlusPetit
+    type (Tgravi) temp,plusPetit
+    type (Tgravi), dimension(SIZE(TabGravi)) :: TabGraviSorted
+    
+    DO I=1,SIZE(TabGravi)
+        TabGraviSorted(i) = TabGravi(i)
+    END DO
+    if (param%sort_results) then
+        DO i = 1, SIZE(TabGraviSorted)
+            plusPetit = TabGraviSorted(i)
+            temp = TabGraviSorted(i)
+            do j = i, SIZE(TabGraviSorted)
+                if (str2double(TabGraviSorted(j)%Serial) <= str2double(plusPetit%Serial)) then
+                    plusPetit = TabGraviSorted(j)
+                    indicePlusPetit = j
+                end if
+            end do
+            TabGraviSorted(i) = plusPetit
+            TabGraviSorted(indicePlusPetit) = temp
+        END DO
+    end if
     ! Ecriture des observations dans le fichier r&eacute;sultat
     
     write(70,*)"<BR><HR><A NAME=""Coef_etal""></A>"
@@ -158,15 +186,15 @@ subroutine WHTML_cal_gravi()
     write(70,*)"<CAPTION><STRONG>Coefficients d'&eacute;talonnage des gravim&egrave;tres (Valeurs initiales) </STRONG></CAPTION>"
     write(70,*)"<TR><TD>Num&eacute;ro de s&eacute;rie</TD><TD>Num&eacute;ro dans CG3TOOL.init</TD>"
     write(70,*)"<TD>Coefficient d'&eacute;talonnage</TD><TD></TD></TR>"
-    101 format (A8,A8,A9,A1,A9,F12.6,A9,1x,A6,A10)
+    101 format (A8,A8,A9,A3,A9,F12.6,A9,1x,A6,A10)
 
     do k=1,ngravimeter
-        if (TabGravi(k)%Estimate) then
-            write(70,101)"<TR><TD>",TabGravi(k)%Serial,"</TD><TD>", TabGravi(k)%N,"</TD><TD>",&
-            & TabGravi(k)%Cf,"</TD><TD>",'estim&eacute;',"</TD></TR>"
+        if (TabGraviSorted(k)%Estimate) then
+            write(70,101)"<TR><TD>",TabGraviSorted(k)%Serial,"</TD><TD>", TabGraviSorted(k)%N,"</TD><TD>",&
+            & TabGraviSorted(k)%Cf,"</TD><TD>",'estim&eacute;',"</TD></TR>"
         else
-            write(70,101)"<TR><TD>",TabGravi(k)%Serial,"</TD><TD>", TabGravi(k)%N,"</TD><TD>",&
-            & TabGravi(k)%Cf,"</TD><TD>",'connu',"</TD></TR>"
+            write(70,101)"<TR><TD>",TabGraviSorted(k)%Serial,"</TD><TD>", TabGraviSorted(k)%N,"</TD><TD>",&
+            & TabGraviSorted(k)%Cf,"</TD><TD>",'connu',"</TD></TR>"
         end if
     end do
      
@@ -360,8 +388,30 @@ end subroutine WHTML_observation_rel
 subroutine WHTML_liste_station2()
     use param_data
     use raw_data
+    use util_str
     implicit none
-    integer k
+    integer k,i,j, indicePlusPetit
+    type (Tstation) temp,plusPetit
+    
+    type (Tstation), dimension(SIZE(TabStation)) :: TabStationSorted
+    
+    DO I=1,SIZE(TabStation)
+        TabStationSorted(i) = TabStation(i)
+    END DO
+    if (param%sort_results) then
+        DO i = 1, SIZE(TabStationSorted)
+            plusPetit = TabStationSorted(i)
+            temp = TabStationSorted(i)
+            do j = i, SIZE(TabStationSorted)
+                if (str2double(TabStationSorted(j)%nomsta) <= str2double(plusPetit%nomsta)) then
+                    plusPetit = TabStationSorted(j)
+                    indicePlusPetit = j
+                end if
+            end do
+            TabStationSorted(i) = plusPetit
+            TabStationSorted(indicePlusPetit) = temp
+        END DO
+    end if
     
     write(70,*)"<BR><HR><A NAME=""list_station""></A>"
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
@@ -370,9 +420,9 @@ subroutine WHTML_liste_station2()
     write(70,*)"<TR><TD>Nom</TD><TD>Longitude</TD><TD>Latitude</TD><TD>Num&eacute;ro de l'inconnue</TD></TR>"
 
     do k=1,NTabStation
-        write(70,'(A12,A8,A12,f14.8,A12,f14.8,A12,I12,A12)')"<TR><TD>",TabStation(k)%nomsta,&
-        &"</TD><TD>",TabStation(k)%lon,"</TD><TD>",TabStation(k)%lat&
-        &,"</TD><TD>",TabStation(k)%numsta,"</TD></TR>"
+        write(70,'(A12,A8,A12,f14.8,A12,f14.8,A12,I12,A12)')"<TR><TD>",TabStationSorted(k)%nomsta,&
+        &"</TD><TD>",TabStationSorted(k)%lon,"</TD><TD>",TabStationSorted(k)%lat&
+        &,"</TD><TD>",TabStationSorted(k)%numsta,"</TD></TR>"
     end do
     write(70,*)"</TABLE>"
 end subroutine WHTML_liste_station2
@@ -477,8 +527,30 @@ end subroutine WHTML_DOF_null
 subroutine WHTML_gravi_abs()
     use param_data
     use raw_data
+    use util_str
     implicit none
-    integer k
+    integer k,i,j, indicePlusPetit
+    type (TObsAbs) temp,plusPetit
+    
+    type (TObsAbs), dimension(param%Nb_obsAbs) :: TabObsAbsSorted
+
+    DO I=1,param%Nb_obsAbs
+        TabObsAbsSorted(i) = TabObsAbs(i)
+    END DO
+    if (param%sort_results) then
+        DO i = 1, param%Nb_obsAbs
+            plusPetit = TabObsAbsSorted(i)
+            temp = TabObsAbsSorted(i)
+            do j = i, param%Nb_obsAbs
+                if (str2double(TabObsAbsSorted(j)%nomsta) <= str2double(plusPetit%nomsta)) then
+                    plusPetit = TabObsAbsSorted(j)
+                    indicePlusPetit = j
+                end if
+            end do
+            TabObsAbsSorted(i) = plusPetit
+            TabObsAbsSorted(indicePlusPetit) = temp
+        END DO
+    end if
     
     write(70,*)"<BR><HR><A NAME=""obs_abs""></A>"
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
@@ -490,9 +562,9 @@ subroutine WHTML_gravi_abs()
 	    !write(70,'(A8,A8,A9,f11.3,A9,F6.3,A10)')"<TR><TD>",fixstn(k),&
 	    !&"</TD><TD>",fixgra(k),"</TD><TD>",stdx(k),"</TD></TR>"
 	    write(70,'(A8,A8,A9,f11.3,A9,F6.3,A10)')"<TR><TD>",&
-	    &TabObsAbs(k)%nomsta,"</TD><TD>",&
-	    &TabObsAbs(k)%grav,"</TD><TD>",&
-	    &TabObsAbs(k)%sd,"</TD></TR>"
+	    &TabObsAbsSorted(k)%nomsta,"</TD><TD>",&
+	    &TabObsAbsSorted(k)%grav,"</TD><TD>",&
+	    &TabObsAbsSorted(k)%sd,"</TD></TR>"
 	end do
     write(70,*)"</TABLE>"
 end subroutine WHTML_gravi_abs
@@ -559,12 +631,40 @@ end subroutine WHTML_histo
 subroutine WHTML_gravity(MC)
     use str_const
     use param_data
-
+    use util_str
     use MC_data
     implicit none
+    type PesComp
+        character (len=8)    :: stat ! station
+        real*8               :: sig  ! variance de l'estimateur
+        real*8               :: X    ! estimateur des MC
+    end type PesComp
     
     type (Tmc), intent(in):: MC
-    integer i
+    type (PesComp), dimension(MC%Nb_sta) :: TabPesComp
+    integer i,k,j, indicePlusPetit
+    type (PesComp) temp,plusPetit
+    
+    DO I=1,MC%Nb_sta
+        TabPesComp(i)%stat = MC%stat(i)
+        TabPesComp(i)%X = MC%X(i)
+        TabPesComp(i)%Sig = MC%Sig(i)
+    END DO
+
+    if (param%sort_results) then
+        DO k = 1, SIZE(TabPesComp)
+            plusPetit = TabPesComp(k)
+            temp = TabPesComp(k)
+            do j = k, SIZE(TabPesComp)
+                if (str2double(TabPesComp(j)%stat) <= str2double(plusPetit%stat)) then
+                    plusPetit = TabPesComp(j)
+                    indicePlusPetit = j
+                end if
+            end do
+            TabPesComp(k) = plusPetit
+            TabPesComp(indicePlusPetit) = temp
+        END DO
+    end if
     
     write(70,*)"<BR><HR><A NAME=""grav_comp1""></A>"
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
@@ -572,23 +672,65 @@ subroutine WHTML_gravity(MC)
     write(70,*)"<CAPTION><H4>Pesanteur compens&eacute;e</H4></CAPTION>"
     write(70,*)"<TR><TD>Nom</TD><TD>Pesanteur compens&eacute;e (mGal)</TD><TD>SD (mGal)</TD></TR>"
 
-    DO I=1,MC%Nb_sta
-        WRITE(70,101)"<TR><TD>",MC%stat(i),"</TD><TD>",MC%X(i),"</TD><TD>",MC%Sig(i),"</TD></TR>"
+    ! DO I=1,MC%Nb_sta
+        ! WRITE(70,101)"<TR><TD>",MC%stat(i),"</TD><TD>",MC%X(i),"</TD><TD>",MC%Sig(i),"</TD></TR>"
+        ! 101 format (A8,a8,A9,F12.3,A9,f12.3,A10)
+    ! END DO
+    DO I=1,SIZE(TabPesComp)
+        WRITE(70,101)"<TR><TD>",TabPesComp(i)%stat,"</TD><TD>",TabPesComp(i)%X,"</TD><TD>",TabPesComp(i)%Sig,"</TD></TR>"
         101 format (A8,a8,A9,F12.3,A9,f12.3,A10)
     END DO
     
     write(70,*)"</TABLE>"    
+    
+    open(182,file = param%dossier(1:len_trim(param%dossier))//"\pesanteur_compensee.txt")
+    WRITE(182,*)WgravF
+    WRITE(182,*)'Nom, Pesanteur compensee (mgal), SD (mgal)' 
+    DO I=1,SIZE(TabPesComp)
+        WRITE(182,'(1x,a8,3X,F12.3,3x,f12.3)')TabPesComp(i)%stat,TabPesComp(i)%X,TabPesComp(i)%Sig
+    END DO
+    close(182)
 end subroutine WHTML_gravity
 
 subroutine WHTML_Ecart(MC)
     use str_const
     use param_data
-
+    use util_str
     use MC_data
     implicit none
     type (Tmc), intent(in):: MC
-    integer i
     
+    type PesComp
+        character (len=8)    :: stat ! station
+        real*8               :: sig  ! variance de l'estimateur
+        real*8               :: X    ! estimateur des MC
+        real*8               :: sol_sans_calib
+    end type PesComp
+    
+    type (PesComp), dimension(MC%Nb_sta) :: TabPesComp
+    integer i,k,j, indicePlusPetit
+    type (PesComp) temp,plusPetit
+    
+    DO I=1,MC%Nb_sta
+        TabPesComp(i)%stat = MC%stat(i)
+        TabPesComp(i)%X = MC%X(i)
+        TabPesComp(i)%Sig = MC%Sig(i)
+        TabPesComp(i)%sol_sans_calib = MC%sol_sans_calib(i)
+    END DO
+    if (param%sort_results) then
+        DO k = 1, SIZE(TabPesComp)
+            plusPetit = TabPesComp(k)
+            temp = TabPesComp(k)
+            do j = k, SIZE(TabPesComp)
+                if (str2double(TabPesComp(j)%stat) <= str2double(plusPetit%stat)) then
+                    plusPetit = TabPesComp(j)
+                    indicePlusPetit = j
+                end if
+            end do
+            TabPesComp(k) = plusPetit
+            TabPesComp(indicePlusPetit) = temp
+        END DO
+    end if
     write(70,*)"<BR><HR><A NAME=""grav_comp2""></A>"
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
     write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
@@ -596,9 +738,15 @@ subroutine WHTML_Ecart(MC)
     write(70,*)"<TR><TD>Nom</TD><TD>Pesanteur compens&eacute;e (mGal)</TD><TD>",&
     &"Ecart avec la solution sans calibration (mGal)</TD><TD>SD (mGal)</TD></TR>"
 
-    DO I=1,MC%Nb_sta
-        WRITE(70,101)"<TR><TD>",MC%stat(i),"</TD><TD>",MC%X(i),&
-        &"</TD><TD>",MC%sol_sans_calib(i)-MC%X(i),"</TD><TD>",MC%Sig(i),"</TD></TR>"
+    ! DO I=1,MC%Nb_sta
+        ! WRITE(70,101)"<TR><TD>",MC%stat(i),"</TD><TD>",MC%X(i),&
+        ! &"</TD><TD>",MC%sol_sans_calib(i)-MC%X(i),"</TD><TD>",MC%Sig(i),"</TD></TR>"
+        ! 101 format (A8,a8,A9,F12.3,A9,F12.3,A9,f9.3,A10)
+    ! END DO
+    
+    DO I=1,SIZE(TabPesComp)
+        WRITE(70,101)"<TR><TD>",TabPesComp(i)%stat,"</TD><TD>",TabPesComp(i)%X,&
+        &"</TD><TD>",TabPesComp(i)%sol_sans_calib-TabPesComp(i)%X,"</TD><TD>",TabPesComp(i)%Sig,"</TD></TR>"
         101 format (A8,a8,A9,F12.3,A9,F12.3,A9,f9.3,A10)
     END DO
     
@@ -618,7 +766,6 @@ subroutine WHTML_drift(MC)
     end if
     
     n = param%drift_t + param%drift_k
-    
     write(70,*)"<BR><HR><A NAME=""drift""></A>"
     write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
     write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
@@ -671,8 +818,7 @@ subroutine WHTML_drift(MC)
     write(70,*)"</TABLE>"    
     
 end subroutine WHTML_drift
-
-subroutine WHTML_calibration(MC)
+subroutine WHTML_driftFinale(MC)
     use MC_data
     use param_data
     use raw_data
@@ -680,11 +826,121 @@ subroutine WHTML_calibration(MC)
     type (Tmc), intent(in):: MC
     integer i,k,row,n
     
+    if (param%drift_t==0 .and. param%drift_k==0) then 
+        return
+    end if
+    
+    n = param%drift_t + param%drift_k
+    write(70,*)"<BR><HR><A NAME=""drift2""></A>"
+    write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
+    write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
+    write(70,*)"<CAPTION><H4>D&eacute;rives</H4></CAPTION>"
+    write(70,*)"<TR><TD>","Profil","</TD><TD>","Serial","</TD><TD>"
+    if(param%drift_t.gt.0) then
+        do i=1,param%drift_t
+            write(70,'(A1,I1,A9)')"T",i,"</TD><TD>"
+        end do
+    end if
+    if(param%drift_k.gt.0) then
+        do i=1,param%drift_k
+            if (i==param%drift_k) then 
+                write(70,'(A1,I1)')"K",i
+            else
+                write(70,'(A1,I1,A9)')"K",i,"</TD><TD>"
+            end if
+        end do
+    end if
+    write(70,*)"</TD></TR>"
+    
+            ! Write drift parameters
+    do k=1,MC%Nb_profil
+        write(70,*)"<TR><TD>",k,"</TD><TD>",tabprofil(k)%serial,"</TD><TD>"
+
+        ! d&eacute;rive li&eacute;e au temps
+        if(param%drift_t.gt.0) then
+            row=MC%Nb_sta+(k-1)*(param%drift_t+param%drift_k)
+            do i=1,param%drift_t
+                row=row+1
+                write(70,'(f7.3,A2,f7.3,A1,A10)')MC%X(row)," (",MC%Sig(row),")","</TD><TD>"
+            end do
+        end if
+
+        ! d&eacute;rive li&eacute;e &agrave; la temp&eacute;rature
+        if(param%drift_k.gt.0) then
+            row=MC%Nb_sta+(k-1)*(param%drift_t+param%drift_k) + param%drift_t
+            do i=1,param%drift_k
+                row=row+1
+                if (i==param%drift_k) then
+                    write(70,'(f7.3,A2,f7.3,A1)')MC%X(row),"(",MC%Sig(row),")"
+                else
+                    write(70,'(f7.3,A2,f7.3,A1,A10)')MC%X(row)," (",MC%Sig(row),")","</TD><TD>"
+                end if
+            end do
+        end if
+
+        write(70,*)"</TD></TR>"
+    end do
+    write(70,*)"</TABLE>"    
+    
+end subroutine WHTML_driftFinale
+
+subroutine WHTML_calibration(MC)
+    use MC_data
+    use param_data
+    use raw_data
+    use util_str
+    implicit none
+    type (Tmc), intent(in):: MC
+    integer i,j,k,row,n,nbEstimate, indicePlusPetit, index
+    
+    
+    type CalibEstimate
+        character (len=8) Serial
+        character(len=3) N !indice du gravi ; destiné à remplacer Num
+        real*8 :: X0   ! Valeurs approchées
+        real*8 :: sig  ! variance de l'estimateur
+    end type CalibEstimate
+    
+    type (CalibEstimate), dimension(1000) ::  TabCalibEstimate
+    
+    type (CalibEstimate) temp,plusPetit
+    
+    nbEstimate=0
+    do k=1,ngravimeter
+        if (TabGravi(k)%Estimate) then
+            nbEstimate=nbEstimate+1
+        end if
+    end do    
     
     row = MC%Nb_sta + (MC%Nb_profil) * (MC%degre_k + MC%degre_t)
     
     if (MC%ngravi_Cal==0) then 
         return
+    end if
+    index=1
+    do k=1,ngravimeter
+        if (TabGravi(k)%Estimate) then
+            row = row + 1
+            TabCalibEstimate(index)%serial = TabGravi(k)%serial
+            TabCalibEstimate(index)%N = TabGravi(k)%N
+            TabCalibEstimate(index)%X0 = MC%X0(row)
+            TabCalibEstimate(index)%Sig = MC%Sig(row)
+            index = index+1
+        end if
+    end do
+    if (param%sort_results) then
+        DO k = 1,nbEstimate
+            plusPetit = TabCalibEstimate(k)
+            temp = TabCalibEstimate(k)
+            do j = k, nbEstimate
+                if (str2double(TabCalibEstimate(j)%serial) <= str2double(plusPetit%serial)) then
+                    plusPetit = TabCalibEstimate(j)
+                    indicePlusPetit = j
+                end if
+            end do
+            TabCalibEstimate(k) = plusPetit
+            TabCalibEstimate(indicePlusPetit) = temp
+        END DO
     end if
     
     write(70,*)"<BR><HR><A NAME=""coeff_calib_out""></A>"
@@ -693,19 +949,21 @@ subroutine WHTML_calibration(MC)
     write(70,*)"<CAPTION><H4>Coefficients de calibration</H4></CAPTION>"
     write(70,*)"<TR><TD>Num&eacute;ro de s&eacute;rie</TD><TD>CG3TOOL letter</TD><TD>Calibration</TD><TD>SD</TD></TR>"
 
-    do k=1,ngravimeter
-    
-        if (TabGravi(k)%Estimate) then
-            row = row + 1
-            write(70,101)"<TR><TD>",TabGravi(k)%serial,"</TD><TD>",&
-            &TabGravi(k)%N,"</TD><TD>",&
-            &MC%X0(row),"</TD><TD>",MC%Sig(row),"</TD></TR>"
-            101 format (A8,A8,A9,A1,A9,f20.6,A9,f20.6,A10)
-
-        end if
-
+    ! do k=1,ngravimeter
+        ! if (TabGravi(k)%Estimate) then
+            ! row = row + 1
+            ! write(70,101)"<TR><TD>",TabGravi(k)%serial,"</TD><TD>",&
+            ! &TabGravi(k)%N,"</TD><TD>",&
+            ! &MC%X0(row),"</TD><TD>",MC%Sig(row),"</TD></TR>"
+            ! 101 format (A8,A8,A9,A3,A9,f20.6,A9,f20.6,A10)
+        ! end if
+    ! end do
+    do k=1,nbEstimate
+        write(70,101)"<TR><TD>",TabCalibEstimate(k)%serial,"</TD><TD>",&
+        &TabCalibEstimate(k)%N,"</TD><TD>",&
+        &TabCalibEstimate(k)%X0,"</TD><TD>",TabCalibEstimate(k)%Sig,"</TD></TR>"
+        101 format (A8,A8,A9,A3,A9,f20.6,A9,f20.6,A10)
     end do
-
     write(70,*)"</TABLE>"
 
     
@@ -906,6 +1164,7 @@ subroutine WHTML_tautest(MC,mode,nom)
         l = Tabresid(k)%profil
         profile = TabProfil(l)%nomfic
         
+
         if (W_only_failed_tau_test) then
             if (tau>MC%crit_tau) then
 !                WRITE(70,57)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>",&
@@ -914,7 +1173,6 @@ subroutine WHTML_tautest(MC,mode,nom)
                 WRITE(70,58)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>",&
                 &Tabresid(k)%fin,"</TD><TD>",Tabresid(k)%obs,"</TD><TD>",&
                 &Tabresid(k)%resid,"</TD><TD>",tau,"</TD><TD>",test,"</TD><TD>",profile,"</TD></TR>"
-
             endif
         else
             !WRITE(70,57)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>",&
@@ -923,7 +1181,6 @@ subroutine WHTML_tautest(MC,mode,nom)
             WRITE(70,58)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>",&
                 &Tabresid(k)%fin,"</TD><TD>",Tabresid(k)%obs,"</TD><TD>",&
                 &Tabresid(k)%resid,"</TD><TD>",tau,"</TD><TD>",test,"</TD><TD>",profile,"</TD></TR>"
-
         endif
         
         
@@ -953,8 +1210,8 @@ subroutine WHTML_tautest(MC,mode,nom)
                     !WRITE(70,58)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>","  ",&
                     !&"</TD><TD>",Tabresid(k)%obs,"</TD><TD>",Tabresid(k)%resid,&
                     !&"</TD><TD>",tau,"</TD><TD>",test,"</TD><TD>"," ","</TD></TR>"
-                    
-                    WRITE(70,58)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>","  ",&
+
+                    WRITE(70,58)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>",Tabresid(k)%fin,&
                     &"</TD><TD>",Tabresid(k)%obs,"</TD><TD>",Tabresid(k)%resid,&
                     &"</TD><TD>",tau,"</TD><TD>",test,"</TD><TD>",&
                     &param%TabDataFic(TabObsAbs(abs_obs_index)%num_abs_file)%nom&
@@ -970,7 +1227,8 @@ subroutine WHTML_tautest(MC,mode,nom)
                 !&"</TD><TD>",Tabresid(k)%obs,"</TD><TD>",Tabresid(k)%resid,&
                 !&"</TD><TD>",tau,"</TD><TD>",test,"</TD><TD>"," ","</TD></TR>"
                     
-                WRITE(70,58)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>","  ",&
+                    
+                WRITE(70,58)"<TR><TD>",Tabresid(k)%ini,"</TD><TD>",Tabresid(k)%fin,&
                 &"</TD><TD>",Tabresid(k)%obs,"</TD><TD>",Tabresid(k)%resid,&
                 &"</TD><TD>",tau,"</TD><TD>",test,"</TD><TD>",&
                 &param%TabDataFic(TabObsAbs(abs_obs_index)%num_abs_file)%nom&
