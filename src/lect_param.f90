@@ -300,6 +300,13 @@ integer function Parse_config_file(p)
                     p%sort_results = .true.
                 end if
                 
+            else if (tabline(1)=='SORT_OBS') then
+                if (tabline(2)=='N') then
+                    p%sort_obs = .false.
+                else if (tabline(2)=='Y') then
+                    p%sort_obs = .true.
+                end if
+                
             ! Ecriture dans les rapports de la liste des fichiers
             else if (tabline(1)=='WRITE_LIST_FIC' ) then  
                 if (tabline(2)=='N') then

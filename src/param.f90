@@ -60,6 +60,7 @@ implicit none
         logical write_gravity
         logical write_drift
         logical sort_results
+        logical sort_obs
         logical create_r
         integer Nb_residus_shown
                 
@@ -125,6 +126,7 @@ subroutine Init_param(p)
     p%write_resid=.true.
     p%write_only_failed_tau_test=.false.
     p%sort_results = .false.
+    p%sort_obs = .false.
     p%Nb_residus_shown = 20
     
     p%create_r=.false.

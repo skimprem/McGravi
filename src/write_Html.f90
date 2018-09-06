@@ -164,7 +164,7 @@ subroutine WHTML_cal_gravi()
     DO I=1,SIZE(TabGravi)
         TabGraviSorted(i) = TabGravi(i)
     END DO
-    if (param%sort_results) then
+    if (param%sort_obs) then
         DO i = 1, SIZE(TabGraviSorted)
             plusPetit = TabGraviSorted(i)
             temp = TabGraviSorted(i)
@@ -215,23 +215,27 @@ end subroutine WHTML_sigma_coeff
 subroutine WHTML_liste_nomficrel()
     use param_data
     implicit none
-    integer k,LENrep, LENnomfic,w,z
+    integer k,LENrep, LENnomfic,w,z, i, j, indicePlusPetit, nbFic
     type (TDataFic) Dfic
     character (len=100) :: CHFMT
     character (len=60) nom_complet,rep,nomfic
     
-    write(70,*)"<BR><HR><A NAME=""List_ficRel""></A>"
-    write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
-    write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
-    write(70,*)"<CAPTION><H4>Fichiers d'observations relatives</H4></CAPTION>"
-    write(70,*)"<TR><TD>Num</TD><TD>Fichier</TD><TD>Facteur</TD><TD>Terme additif</TD></TR>"
-
+    type FicRel
+        integer              :: index
+        character (len=60)    :: nom_complet ! station
+        real*8               :: Sigma_f  ! variance de l'estimateur
+        real*8               :: sigma_a    ! estimateur des MC
+    end type FicRel
+    
+    type (FicRel), dimension(param%nDataFic) ::  TabFicRel
+    
+    type (FicRel) temp, plusPetit
+    nbFic=0
     do k=1,param%nDataFic
         Dfic = param%TabDataFic(k)
-        
         if (Dfic%typ == 0) then
-        
-            rep = Dfic%rep       
+            nbFic = nbFic + 1
+            rep = Dfic%rep
             LENrep = len_trim(rep)
             nomfic = Dfic%nom
             LENnomfic = len_trim(nomfic)
@@ -241,11 +245,57 @@ subroutine WHTML_liste_nomficrel()
             z = 50 - w
             WRITE (CHFMT,500) '(A8,I4,A9,A',w,',A9,f6.1,A9,f6.3,A10)' 
             500  FORMAT (A,I2,A) 
+            TabFicRel(nbFic)%index = k
+            TabFicRel(nbFic)%nom_complet = nom_complet
+            TabFicRel(nbFic)%Sigma_f = Dfic%Sigma_f
+            TabFicRel(nbFic)%sigma_a = Dfic%sigma_a
+            !write(70,*)k,":",TabFicRel(nbFic)%nom_complet,":", TabFicRel(nbFic)%Sigma_f,":", TabFicRel(nbFic)%sigma_a,"\n"
+            !55 format (A8,A<w>,A9,f6.1,A9,f6.3,A10)
+        end if
+    end do
+    
+    if (param%sort_obs) then
+        DO i = 1, nbFic
+            plusPetit = TabFicRel(i)
+            temp = TabFicRel(i)
+            do j = i, nbFic
+                if (LGE(plusPetit%nom_complet,TabFicRel(j)%nom_complet)) then
+                    plusPetit = TabFicRel(j)
+                    indicePlusPetit = j
+                end if
+            end do
+            TabFicRel(i) = plusPetit
+            TabFicRel(indicePlusPetit) = temp
+        END DO
+    end if
+    
+    write(70,*)"<BR><HR><A NAME=""List_ficRel""></A>"
+    write(70,*)"<P><A HREF=""#Haut_Page"">Sommaire</A></P>"
+    write(70,*)"<TABLE CELLPADDING=3 BORDER=""1"">"
+    write(70,*)"<CAPTION><H4>Fichiers d'observations relatives</H4></CAPTION>"
+    write(70,*)"<TR><TD>Num</TD><TD>Fichier</TD><TD>Facteur</TD><TD>Terme additif</TD></TR>"
+
+    do k=1,nbFic
+        ! Dfic = param%TabDataFic(k)
+        
+        ! if (Dfic%typ == 0) then
+            ! rep = Dfic%rep       
+            ! LENrep = len_trim(rep)
+            ! nomfic = Dfic%nom
+            ! LENnomfic = len_trim(nomfic)
+            ! nom_complet = ''        
+            ! nom_complet(1:LENnomfic+LENrep) = rep(1:LENrep)//nomfic(1:LENnomfic)
+            ! w = len_trim(nom_complet)
+            ! z = 50 - w
+            ! WRITE (CHFMT,500) '(A8,I4,A9,A',w,',A9,f6.1,A9,f6.3,A10)' 
+            ! 500  FORMAT (A,I2,A) 
             
-            write(70,FMT=CHFMT)"<TR><TD>",k,"</TD><TD>",nom_complet,"</TD><TD>", Dfic%Sigma_f,"</TD><TD>", Dfic%sigma_a,"</TD></TR>"
+            ! write(70,FMT=CHFMT)"<TR><TD>",k,"</TD><TD>",nom_complet,"</TD><TD>", Dfic%Sigma_f,"</TD><TD>", Dfic%sigma_a,"</TD></TR>"
+            write(70,FMT=CHFMT)"<TR><TD>",TabFicRel(k)%index,"</TD><TD>",TabFicRel(k)%nom_complet,"</TD><TD>",TabFicRel(k)%Sigma_f&
+            &,"</TD><TD>",TabFicRel(k)%sigma_a,"</TD></TR>"
             !55 format (A8,A<w>,A9,f6.1,A9,f6.3,A10)
             
-        end if
+        !end if
     end do
     write(70,*)"</TABLE>"
 end subroutine WHTML_liste_nomficrel
@@ -398,7 +448,7 @@ subroutine WHTML_liste_station2()
     DO I=1,SIZE(TabStation)
         TabStationSorted(i) = TabStation(i)
     END DO
-    if (param%sort_results) then
+    if (param%sort_obs) then
         DO i = 1, SIZE(TabStationSorted)
             plusPetit = TabStationSorted(i)
             temp = TabStationSorted(i)
@@ -537,7 +587,7 @@ subroutine WHTML_gravi_abs()
     DO I=1,param%Nb_obsAbs
         TabObsAbsSorted(i) = TabObsAbs(i)
     END DO
-    if (param%sort_results) then
+    if (param%sort_obs) then
         DO i = 1, param%Nb_obsAbs
             plusPetit = TabObsAbsSorted(i)
             temp = TabObsAbsSorted(i)
