@@ -4,7 +4,7 @@ FC=gfortran
 FLAGS=-DG95=1 -g  -ffpe-trap=overflow,invalid,zero,underflow -Wconversion -fbounds-check
 
 #definition de l'executable
-EXECDIR = ../bin/
+#EXECDIR = ../bin/
 #EXECDIR = ../../compensation_gravi/Compensation_2016_2017_sans_gradient/
 EXEC = mcgravi
 

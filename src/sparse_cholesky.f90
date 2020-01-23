@@ -25,7 +25,7 @@ integer function CHOLESKY(M,neqns,b,mode,c)
 	
 	! Parameters
 	integer*4 max,nmax
-	parameter     (nmax=100000,max=7000000)
+	parameter     (nmax=100000,max=10000000)
     integer*4 mode,neqns
     real*8,dimension(max)::b,c
     real*8,dimension(:,:)::M
