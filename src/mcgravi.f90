@@ -295,6 +295,7 @@ module mcgravi_main
 ! 3.0.11 06/09/2018 : 1. tri des obs relatives dans le html de résultats, dissociation du tri des obs et des résultats avec les 
 !                        paramètre SORTING_OBS et SORTING_RESULTS
 ! 3.0.13 23/01/2020 : 1. augmentation de la taille max sparse-cholesky
+! 3.0.14 05/05/2023 : 1. add gmt6 module for GMT version 6
 !
 ! note ifort : Le compilateur initialise mal les variables. Dans ce cas, il faut aller dans Projet\Propriétés de MC Gravi\Propriétés
 ! de configuration\Fortran\Data\Local Variable Storage\ et sélectionner : All variables SAVE
@@ -334,7 +335,7 @@ integer function MCGRAVI(nomfic_conf)
     use rempli_matMC
     use MC_inversion
     use MC_statistic
-    use GMT
+    use GMT6
     use Portability_routines
 
     implicit none
@@ -604,7 +605,7 @@ integer function MCGRAVI(nomfic_conf)
         
         open(68,file=f_result2) ! Fichier de sortie
         
-        call WGMT_bat('gmt.pl')
+        call WGMT_bat('gmt.sh')
         call WGMT_pts_rel("pts_rel.txt")
         call WGMT_pts_abs("pts_abs.txt")
         call WGMT_profil("profils.txt",MCf)
@@ -653,7 +654,7 @@ integer function MCGRAVI(nomfic_conf)
         
         call WHTML_khi2(MCf)
         call WGMT_fic_histo("histo1.txt",MCf)
-        call WGMT_bat_histo('hist1.pl',"histo1.txt",'hist1.ps','hist1.png')
+        call WGMT_bat_histo('hist1.sh',"histo1.txt",'hist1','hist1.png')
         call WHTML_histo('hist1.png')
         call WHTML_synthese(MCf,1,'synthese1')
         IF (MCf%Nb_obsRel+MCf%Nb_obsabs>20) THEN
@@ -721,7 +722,7 @@ integer function MCGRAVI(nomfic_conf)
         
         ! ################"    
                 
-        call WGMT_bat('gmt.pl')
+        call WGMT_bat('gmt.sh')
         call WGMT_pts_rel("pts_rel.txt")
         call WGMT_pts_abs("pts_abs.txt")
         call WGMT_profil("profils.txt",MCc)
@@ -778,7 +779,7 @@ integer function MCGRAVI(nomfic_conf)
         end if
         call WHTML_khi2(MCc)
         call WGMT_fic_histo("histo1.txt",MCc)
-        call WGMT_bat_histo('hist1.pl',"histo1.txt",'hist1.ps','hist1.png')
+        call WGMT_bat_histo('hist1.sh',"histo1.txt",'hist1','hist1.png')
         call WHTML_histo('hist1.png')
         call WHTML_synthese(MCc,2,'synthese1')
         IF (MCc%Nb_obsRel+MCc%Nb_obsabs>20) THEN
@@ -906,7 +907,7 @@ integer function MCGRAVI(nomfic_conf)
             end if
             call WHTML_khi2(MCc)
             call WGMT_fic_histo("histo2.txt",MCc)
-            call WGMT_bat_histo('hist2.pl',"histo2.txt",'hist2.ps','hist2.png')
+            call WGMT_bat_histo('hist2.sh',"histo2.txt",'hist2','hist2.png')
             call WHTML_histo('hist2.png')
             call WHTML_synthese(MCc,2,'synthese2')
             IF (MCc%Nb_obsRel+MCc%Nb_obsabs>20) THEN

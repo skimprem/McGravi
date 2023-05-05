@@ -9,10 +9,10 @@ EXEC = mcgravi
 
 all : comp link
 
-comp : Port_routines.o util_str.o sys_utils.o str_const.o raw_data.o param.o lect_param.o lect_rawdata.o mc_data.o write_matr.o rempli_matMC.o sparse_cholesky.o mc_inversion.o mc_simulation.o ecriture.o gmt.o write_Html.o write_xml.o mc_statistic.o BLKFCLT.o mcgravi.o mc_gravi.o
+comp : Port_routines.o util_str.o sys_utils.o str_const.o raw_data.o param.o lect_param.o lect_rawdata.o mc_data.o write_matr.o rempli_matMC.o sparse_cholesky.o mc_inversion.o mc_simulation.o ecriture.o gmt6.o write_Html.o write_xml.o mc_statistic.o BLKFCLT.o mcgravi.o mc_gravi.o
 	
 link : 
-	$(FC) -static -o $(EXECDIR)$(EXEC) mc_gravi.o Port_routines.o util_str.o sys_utils.o str_const.o raw_data.o param.o lect_param.o lect_rawdata.o mc_data.o write_matr.o rempli_matMC.o sparse_cholesky.o mc_inversion.o mc_simulation.o ecriture.o gmt.o write_Html.o write_xml.o mc_statistic.o BLKFCLT.o mcgravi.o 
+	$(FC) -static -o $(EXECDIR)$(EXEC) mc_gravi.o Port_routines.o util_str.o sys_utils.o str_const.o raw_data.o param.o lect_param.o lect_rawdata.o mc_data.o write_matr.o rempli_matMC.o sparse_cholesky.o mc_inversion.o mc_simulation.o ecriture.o gmt6.o write_Html.o write_xml.o mc_statistic.o BLKFCLT.o mcgravi.o 
 
 install:
 	cp $(EXECDIR)$(EXEC) /usr/local/bin
@@ -63,8 +63,8 @@ mc_simulation.o : mc_simulation.f90
 ecriture.o : ecriture.f90
 	$(FC) -c $(FLAGS) ecriture.f90
 	
-gmt.o : gmt.f90
-	$(FC) -c $(FLAGS) gmt.f90
+gmt6.o : gmt6.f90
+	$(FC) -c $(FLAGS) gmt6.f90
 	
 write_Html.o : write_Html.f90
 	$(FC) -c $(FLAGS) write_Html.f90
