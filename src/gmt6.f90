@@ -369,12 +369,12 @@ subroutine WGMT_bat_profils(nomfic)
     call Wfic(80, "gmt begin Profils") 
     call Wfic(80, &
         '    $coast $region $proj -BWESN+t"Observations relatives et absolue" -B1g1f -Df -A0/1 -N1 &
-        -W1 -G255/220/150 -S150/255/255 -I1/0.5p,0/0/255 &
-        -I2/0.5p,0/0/255 -I3/0.5p,0/0/255 $x_shift $y_shift ')
-    call Wfic(80, "    $plot -W1.5,120/120/120 profils.txt")
-    call Wfic(80, "    $plot -Sc0.075 -G0/0/0 pts_rel.txt")
+        -W1 -G255/220/150 -Scyan -I1/0.5p,blue &
+        -I2/0.5p,blue -I3/0.5p,blue $x_shift $y_shift ')
+    call Wfic(80, "    $plot -W1.5p,gray profils.txt")
+    call Wfic(80, "    $plot -Sc0.075 -Gblack pts_rel.txt")
     call Wfic(80, "    $text -S5/255/220/150 -G94/151/106 -Dj0.05 pts_rel.txt")
-    call Wfic(80, "    $plot -St0.25 -G255/0/0 pts_abs.txt")
+    call Wfic(80, "    $plot -St0.25 -Gred pts_abs.txt")
     call Wfic(80, "    $text -S5/255/220/150 -G0 -Dj0.05 pts_abs.txt")
     call Wfic(80, "gmt end")
     
@@ -410,20 +410,18 @@ subroutine WGMT_bat_histo(nomfic, nomfic_histo, nomfic_pdf, nomfic_png)
     call Wfic(80, "$gmtset MAP_FRAME_PEN thicker,black")
     call Wfic(80, "$gmtset PROJ_LENGTH_UNIT c")
     
-    call Wfic(80, 'gmt begin '//nomfic_pdf)
+    call Wfic(80, 'gmt begin '//nomfic_pdf//' pdf,png')
     if (param%Type_resid) then         
-        call Wfic(80, '$basemap -R-4.5/+4.5/0/60 -JX16c/20c -Bf0.5a0.5:""&
-        &:/f10a10:"\045":WS:."Histogramme des r\345sidus standards":')
+        call Wfic(80, '$basemap -R-4.5/+4.5/0/60 -JX16c/20c -Bxf0.5a0.5 -Byf10a10 &
+        -By+L"\045" -B+t"Histogram of standard residuals"')
     else
-        call Wfic(80, '$basemap -R-4.5/+4.5/0/60 -JX16c/20c -Bf0.5a0.5:""&
-        &:/f10a10:"\045":WS:."Histogramme des r\345sidus normalis\345s":')
+        call Wfic(80, '$basemap -R-4.5/+4.5/0/60 -JX16c/20c -Bxf0.5a0.5 -Byf10a10 &
+        -By+L"\045" -B+t"Histogram of normalized residuals"')
     end if
-    s = "$plot -G0/0/255 -W0.5p -Sb0.9c -N " // nomfic_histo
+    s = "$plot -Gblue -W0.5p -Sb0.9c -N " // nomfic_histo
     call Wfic(80, s) 
-    call Wfic(80, '$plot -W0.8p/255/0/0 gauss.txt -N')
+    call Wfic(80, '$plot -W0.8p,red gauss.txt -N')
     call Wfic(80, 'gmt end')
-    s = 'gmt psconvert '//nomfic_pdf//'-A -Tg'
-    call Wfic(80, s)
    
     close(80)
     
@@ -469,75 +467,83 @@ subroutine WGMT_bat(nomfic)
     call Wfic(80, 'region="'//gmt_map%REGION//'"')
     call Wfic(80, 'proj="'//gmt_map%PROJ//'"')
     call Wfic(80, 'x_shift="'//gmt_map%X_SHIFT//'"')
-    call Wfic(80, 'y_shift = "'//gmt_map%Y_SHIFT//'"')
+    call Wfic(80, 'y_shift="'//gmt_map%Y_SHIFT//'"')
  
     ! map of standard deviations on gravity
-    call Wfic(80, "gmt begin Error_bars.pdf")
+    call Wfic(80, 'echo -n "    begin Error_bars plotting ... "')
+    call Wfic(80, "gmt begin Error_bars")
     call Wfic(80, &
-    "$coast $region $proj -B1.00g1.00f1.00:.""Ecarts-types sur les pesanteurs estim\345es"":&
-    -Df -A0/1 -N1 -S210 -W1 -G255/220/150 -S150/255/255 -I1/0.5p/0/0/255 &
-    -I2/0.5p/0/0/255 -I3/0.5p/0/0/255  $x_shift $y_shift")
-    call Wfic(80, "$plot error_bars.txt -W1/255/0/0 -G255/0/0 -Sc0.001c -Ey0.3c/255/0/0")
+    '$coast $region $proj -B1g1f1 -B+t"Standard deviations on the blue estimated gravities" &
+    -Df -A0/1 -N1 -W1 -G255/220/150 -Scyan -I1/0.5p,blue &
+    -I2/0.5p,blue -I3/0.5p,blue  $x_shift $y_shift')
+    call Wfic(80, "$plot error_bars.txt -Wthick,red -Gred -Sc0.001c -Ey+p0.3c,red")
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 legende_sigma.txt")
-    call Wfic(80, "$plot -Sc0.075 -G0/0/0 pts_rel.txt")
+    call Wfic(80, "$plot -Sc0.075 -Gblack pts_rel.txt")
     call Wfic(80, "$text -S5/255/220/150 -G94/151/106 -Dj0.05 pts_rel.txt")
-    call Wfic(80, "$plot -St0.25 -G255/0/0 pts_abs.txt")
+    call Wfic(80, "$plot -St0.25 -Gred pts_abs.txt")
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 pts_abs.txt")
     call Wfic(80, "gmt end")
+    call Wfic(80, 'echo "done!"')
     !-Lf6.5/42.5/45/50k       
-    call Wfic(80, s)
+    ! call Wfic(80, s)
 
    ! map of normalized residuals
-    call Wfic(80, "gmt begin Residus_norm.pdf")
+    call Wfic(80, 'echo -n "    begin Residus_norm plotting ... "')
+    call Wfic(80, "gmt begin Residus_norm")
     call Wfic(80, &
-    "$coast $region $proj -B1.00g1.00f1.00:.""R\345sidus normalis\345s"": -Df -A0/1 -N1 -S210 &
-    -W1  -G255/220/150 -S150/255/255 -I1/0.5p/0/0/255 -I2/0.5p/0/0/255 -I3/0.5p/0/0/255 $x_shift $y_shift")
-    call Wfic(80, "$plot -M -W1.5/120/120/120 profils.txt")
-    call Wfic(80, "$plot -W1/0/255/0 -G0/255/0 -Sv0.02c/0.04c/0.04c residus_std_rel.txt")
+    '$coast $region $proj -B1g1f1 -B+t"Normalized residuals" -Df -A0/1 -N1 &
+    -W1  -G255/220/150 -Scyan -I1/0.5p,blue -I2/0.5p,blue -I3/0.5p,blue $x_shift $y_shift')
+    call Wfic(80, "$plot -W1.5p,gray profils.txt")
+    call Wfic(80, "$plot -Wthick,green -Ggreen -Sv0.02c/0.04c/0.04c residus_std_rel.txt")
     !-Lf6.5/42.5/45/50k    
     if (param%mode .eq. 2) then
-        call Wfic(80, "$plot -W1/255/0/255 -G255/0/255 -Sv0.02c/0.04c/0.04c residus_std_abs.txt")   
+        call Wfic(80, "$plot -Wthick,magenta -Gmagenta -Sv0.02c/0.04c/0.04c residus_std_abs.txt")   
     endif
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 legende_resid_std.txt")  
-    call Wfic(80, "$plot -Sc0.075 -G0/0/0 pts_rel.txt")
+    call Wfic(80, "$plot -Sc0.075 -Gblack pts_rel.txt")
     call Wfic(80, "$text -S5/255/220/150 -G94/151/106 -Dj0.05  pts_rel.txt")     
-    call Wfic(80, "$plot -St0.25 -G255/0/0 pts_abs.txt")
+    call Wfic(80, "$plot -St0.25 -Gred pts_abs.txt")
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 pts_abs.txt")
     call Wfic(80, "gmt end")
+    call Wfic(80, 'echo "done!"')
 
     ! map of normalized residues not passing the tau test
-    call Wfic(80, "gmt begin Residus_tautest.pdf")
+    call Wfic(80, 'echo -n "    begin Residus_tautest plotting ... "')
+    call Wfic(80, "gmt begin Residus_tautest")
     call Wfic(80, &
-    "$coast $region $proj -B1.00g1.00f1.00:.""R\345sidus normalis\345s \345chouant au tau-test"": -Df -A0/1 -N1 -S210 &
-    -W1 -G255/220/150 -S150/255/255 -I1/0.5p/0/0/255 -I2/0.5p/0/0/255 -I3/0.5p/0/0/255 $x_shift $y_shift")
+    '$coast $region $proj -B1g1f1 -B+t"Normalized residuals failing the tau test" -Df -A0/1 -N1 &
+    -W1 -G255/220/150 -Scyan -I1/0.5p,blue -I2/0.5p,blue -I3/0.5p,blue $x_shift $y_shift')
     !-Lf6.5/42.5/45/50k    
-    call Wfic(80, "$plot -M -W1.5/120/120/120 profils.txt")
-    call Wfic(80, "$plot -W1/0/255/0 -G0/255/0 -Sv0.02c/0.04c/0.04c residus_tau_rel.txt")
-    call Wfic(80, "$plot -W1/255/0/255 -G255/0/255 -Sv0.02c/0.04c/0.04c residus_tau_abs.txt")   
+    call Wfic(80, "$plot -W1.5p,gray profils.txt")
+    call Wfic(80, "$plot -Wthick,green -Ggreen -Sv0.02c/0.04c/0.04c residus_tau_rel.txt")
+    call Wfic(80, "$plot -Wthick,magenta -Gmagenta -Sv0.02c/0.04c/0.04c residus_tau_abs.txt")   
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 legende_resid_std.txt")  
-    call Wfic(80, "$plot -Sc0.075 -G0/0/0 pts_rel.txt")
+    call Wfic(80, "$plot -Sc0.075 -Gblack pts_rel.txt")
     call Wfic(80, "$text -S5/255/220/150 -G94/151/106 -Dj0.05 pts_rel.txt")     
-    call Wfic(80, "$plot -St0.25 -G255/0/0 pts_abs.txt")
+    call Wfic(80, "$plot -St0.25 -Gred pts_abs.txt")
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 pts_abs.txt")
     call Wfic(80, "gmt end")
+    call Wfic(80, 'echo "done!"')
 
     ! crude tailings map
-    call Wfic(80, "gmt begin Residus_bruts.pdf")
+    call Wfic(80, 'echo -n "    begin Residus_bruts ... "')
+    call Wfic(80, "gmt begin Residus_bruts")
     call Wfic(80, &
-    "$coast $region $proj -B1.00g1.00f1.00:.""R\345sidus"": -Df -A0/1 -N1 -S210 -W1 -G255/220/150 -S150/255/255 -I1/0.5p/0/0/255 &
-    -I2/0.5p/0/0/255 -I3/0.5p/0/0/255 $x_shift $y_shift")
+    '$coast $region $proj -B1g1f1 -B+t"Residuals" -Df -A0/1 -N1 -W1 -G255/220/150 -Scyan -I1/0.5p,blue &
+    -I2/0.5p,blue -I3/0.5p,blue $x_shift $y_shift')
     !-Lf6.5/42.5/45/50k   
-    call Wfic(80, "$plot -M -W1.5/120/120/120 profils.txt")
-    call Wfic(80, "$plot -W1/0/255/0 -G0/255/0 -Sv0.02c/0.04c/0.04c residus_brut_rel.txt")
+    call Wfic(80, "$plot -W1.5p,gray profils.txt")
+    call Wfic(80, "$plot -Wthick,green -Ggreen -Sv0.02c/0.04c/0.04c residus_brut_rel.txt")
     if (param%mode .eq. 2) then
-        call Wfic(80, "$plot -W1/255/0/255 -G255/0/255 -Sv0.02c/0.04c/0.04c residus_brut_abs.txt")  
+        call Wfic(80, "$plot -Wthick,magenta -Gmagenta -Sv0.02c/0.04c/0.04c residus_brut_abs.txt")  
     end if
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 legende_resid_brut.txt") 
-    call Wfic(80, "$plot -Sc0.075 -G0/0/0 pts_rel.txt")
+    call Wfic(80, "$plot -Sc0.075 -Gblack pts_rel.txt")
     call Wfic(80, "$text -S5/255/220/150 -G94/151/106 -Dj0.05 pts_rel.txt")     
-    call Wfic(80, "$plot -St0.25 -G255/0/0 pts_abs.txt")
+    call Wfic(80, "$plot -St0.25 -Gred pts_abs.txt")
     call Wfic(80, "$text -S5/255/220/150 -G0 -Dj0.05 pts_abs.txt")
     call Wfic(80, "gmt end")
+    call Wfic(80, 'echo "done!"')
 
     close(80)
 
