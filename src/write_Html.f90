@@ -733,7 +733,7 @@ subroutine WHTML_gravity(MC)
     
     write(70,*)"</TABLE>"    
     
-    open(182,file = param%dossier(1:len_trim(param%dossier))//"\pesanteur_compensee.txt")
+    open(182,file = param%dossier(1:len_trim(param%dossier))//"/pesanteur_compensee.txt")
     WRITE(182,*)WgravF
     WRITE(182,*)'Nom, Pesanteur compensee (mgal), SD (mgal)' 
     DO I=1,SIZE(TabPesComp)
